@@ -3,6 +3,9 @@ import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
 
+import { useDispatch } from "react-redux";
+import { addData, updateData } from "../actions/actions";
+
 import styled from "./ArchiverMon.module.css";
 import TableBox from "../components/TableBox/TableBox";
 import reloadImg from "../img/reload.png";
@@ -22,6 +25,9 @@ function ArchiverMon() {
   const [pausedCnt, setPausedCnt] = useState(0);
   const [eventList, setEventList] = useState([]);
   const [recentNo, setRecentNo] = useState([]);
+
+  //redux
+  const dispatch = useDispatch();
 
   const getAPI = () => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -70,6 +76,7 @@ function ArchiverMon() {
             console.log(names.length);
 
             //recent no event list
+            dispatch(updateData(tempTime));
             setRecentNo(tempTime.slice(0, 5));
 
             //getDisconnect List

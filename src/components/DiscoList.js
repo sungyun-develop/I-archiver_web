@@ -47,7 +47,7 @@ function DiscoList({ allsize, size, noevent, paused, resno }) {
         </div>
         <div className={styled.child}>
           <Link to="/archiverStatus/noEvent" className={styled.movedPageU}>
-            <h2 className={styled.movedPage}>최근 No Event 목록</h2>
+            <h2 className={styled.movedPage}>Recent No Event</h2>
           </Link>
 
           <div className={styled.ulBody}>
@@ -73,7 +73,7 @@ DiscoList.propTypes = {
   size: PropTypes.number.isRequired,
   noevent: PropTypes.array.isRequired,
   paused: PropTypes.number.isRequired,
-  resno: PropTypes.number.isRequired,
+  resno: PropTypes.array.isRequired,
 };
 
 export default DiscoList;
