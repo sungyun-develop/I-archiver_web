@@ -1,0 +1,57 @@
+.Abody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statBody {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 30px;
+}
+
+.listBody > h3 {
+  font-size: 28px;
+  font-weight: bolder;
+  text-transform: capitalize;
+}
+
+.ulBody {
+  display: flex;
+}
+
+.storageList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 20%;
+}
+
+.storageList > li {
+  background-color: #f2f2f2;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  margin: 8px;
+  border-radius: 15px;
+  transition: all 0.2s ease-in-out;
+}
+
+.storageList > li:hover {
+  background-color: #333;
+  color: #fff;
+}

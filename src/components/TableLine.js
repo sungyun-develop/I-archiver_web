@@ -47,8 +47,8 @@ function TableLine({ pvname, state, Constate, evttime, delta }) {
         {pvname}
       </td>
       <td>{state}</td>
-      <td>{Constate}</td>
-      <td>{evttime}</td>
+      <td>{!Constate ? "-" : Constate}</td>
+      <td>{!evttime ? "-" : evttime}</td>
       <td>
         <input
           className={styled.buttonStyle}
@@ -75,8 +75,8 @@ function TableLine({ pvname, state, Constate, evttime, delta }) {
 TableLine.propTypes = {
   pvname: PropTypes.string.isRequired,
   state: PropTypes.string.isRequired,
-  Constate: PropTypes.string.isRequired,
-  evttime: PropTypes.string.isRequired,
+  Constate: PropTypes.string,
+  evttime: PropTypes.string,
   delta: PropTypes.string.isRequired,
 };
 

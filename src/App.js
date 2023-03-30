@@ -6,6 +6,7 @@ import RWfiles from "./routes/RWfiles";
 import Nms from "./routes/Nms";
 import ArchiverMon from "./routes/ArchiverMon";
 import KomacArch from "./routes/KomacArch";
+import NoeventTable from "./components/noeventtable/NoeventTable";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/read&write" element={<RWfiles />} />
         <Route path="/komac_archiver" element={<KomacArch />} />
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
+        <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
       </Routes>
     </BrowserRouter>
   );

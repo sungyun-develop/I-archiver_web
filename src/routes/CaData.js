@@ -65,35 +65,35 @@ function CaData() {
     const getBeamSts = json.beamSTS;
     setGetbeamsts(getBeamSts);
 
-    const eng = 0;
+    let eng = 0;
     const wthEnergy = json.Beam_Energy;
     if (wthEnergy == 9) {
-      setGetEnergy(100);
-      const eng = 100;
+      eng = 100;
+      setGetEnergy(eng);
     } else if (wthEnergy == 8) {
-      setGetEnergy(90);
-      const eng = 90;
+      eng = 90;
+      setGetEnergy(eng);
     } else if (wthEnergy == 7) {
-      setGetEnergy(81);
-      const eng = 81;
+      eng = 81;
+      setGetEnergy(eng);
     } else if (wthEnergy == 6) {
-      setGetEnergy(69);
-      const eng = 69;
+      eng = 69;
+      setGetEnergy(eng);
     } else if (wthEnergy == 5) {
-      setGetEnergy(57);
-      const eng = 57;
+      eng = 57;
+      setGetEnergy(eng);
     } else if (wthEnergy == 4) {
-      setGetEnergy(45);
-      const eng = 45;
+      eng = 45;
+      setGetEnergy(eng);
     } else if (wthEnergy == 3) {
-      setGetEnergy(33);
-      const eng = 33;
+      eng = 33;
+      setGetEnergy(eng);
     } else if (wthEnergy == 2) {
-      setGetEnergy(20);
-      const eng = 20;
+      eng = 20;
+      setGetEnergy(eng);
     } else {
-      setGetEnergy(0);
-      const eng = 0;
+      eng = 0;
+      setGetEnergy(eng);
     }
 
     const width = Number(json.Pulse_width);
@@ -101,7 +101,8 @@ function CaData() {
 
     const meancurr = getDtl107 * width * getRep * 0.001;
     setMeanCURR(meancurr.toFixed(3));
-    setMeanPower(meancurr * eng);
+    console.log(eng);
+    setMeanPower((meancurr * eng).toFixed(3));
 
     const strArray0 = json.RFQ_BCM;
     const strArray1 = json.DTL22_BCM;
@@ -178,7 +179,7 @@ function CaData() {
             <td>{get107CURR}mA</td>
           </tr>
         </table>
-        <BarGraph data={currArray} />
+        <BarGraph data={currArray} width="800" height="550" />
       </div>
       <div className={styled.beamsts}>
         <h3>빔펄스폭 : {getWidth} us</h3>

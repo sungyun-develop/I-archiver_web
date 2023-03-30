@@ -17,38 +17,101 @@ function ArchiverMon() {
   const [searchArray, setSearchArray] = useState([]);
   const [goBack, setGoBack] = useState(false);
 
+  const [allList, setAllList] = useState(0);
+  const [disList, setDisList] = useState(0);
+  const [pausedCnt, setPausedCnt] = useState(0);
+  const [eventList, setEventList] = useState([]);
+  const [recentNo, setRecentNo] = useState([]);
+
   const getAPI = () => {
+    const currentTime = Math.floor(Date.now() / 1000);
     const url1 = "/mgmt/bpl/getPVStatus";
     const url2 = "/mgmt/bpl/getCurrentlyDisconnectedPVs";
+    const url3 = "/mgmt/bpl/getEventRateReport";
+    const url4 = "/mgmt/bpl/getPausedPVsReport";
+    const url5 = "/mgmt/bpl/getTimeSpanReport";
     axios
-      .all([axios.get(url1), axios.get(url2)])
+      .all([
+        axios.get(url1),
+        axios.get(url2),
+        axios.get(url3),
+        axios.get(url4),
+        axios.get(url5),
+      ])
       .then(
-        axios.spread((response1, response2) => {
-          const getData = response1.data;
-          const getDisList = response2.data;
-          console.log(getDisList);
+        axios.spread(
+          (response1, response2, response3, response4, response5) => {
+            const getData = response1.data;
+            const getDisList = response2.data;
+            const getEventList = response3.data;
+            const getPaused = response4.data;
+            const getTimeList = response5.data;
 
-          let today = new Date(dayjs(new Date()).format("M/DD/YYYY HH:mm:ss"));
-          const sortedData = getData.map((index) => ({
-            pvname: index.pvName,
-            state: index.status,
-            Constate: index.connectionState,
-            event: index.lastEvent,
-            delta: index.lastEvent,
-          }));
+            //compared with current time and export data
+            let timeList = Object.keys(getTimeList);
+            let tempTime = [];
+            timeList.map((index) => {
+              let lastEvent = Math.floor(
+                (currentTime - Number(getTimeList[index].lastEvent)) / 3600
+              );
+              if (lastEvent >= 36 && lastEvent < 500) {
+                tempTime.push({ pvname: index, time: lastEvent });
+              }
+            });
+            tempTime.sort(function (a, b) {
+              return a["time"] - b["time"];
+            });
 
-          sortedData.map((index) => {
-            const etime = index.event;
-            if (etime === "Never" || !etime) {
-              index.event = etime;
-            } else {
-              index.event = etime.replace(/\+09:00/, "").replace(/\?/, "");
-              index.delta = (today - new Date(index.event)) / 1000;
-            }
-          });
+            //remove bi
+            const ttty = tempTime;
+            const names = ttty.map(function (item) {
+              return item.pvname;
+            });
+            console.log(names.length);
 
-          setGetReport(sortedData);
-        })
+            //recent no event list
+            setRecentNo(tempTime.slice(0, 5));
+
+            //getDisconnect List
+            setAllList(getData.length);
+            setDisList(getDisList.length);
+            //get Paused Count
+            setPausedCnt(getPaused.length);
+
+            //getEventRate List
+
+            let zerodata = [];
+            getEventList.map((index) => {
+              if (index.eventRate == 0) {
+                zerodata.push(index.pvName);
+              }
+            });
+            setEventList(zerodata);
+
+            let today = new Date(
+              dayjs(new Date()).format("M/DD/YYYY HH:mm:ss")
+            );
+            const sortedData = getData.map((index) => ({
+              pvname: index.pvName,
+              state: index.status,
+              Constate: index.connectionState,
+              event: index.lastEvent,
+              delta: index.lastEvent,
+            }));
+
+            sortedData.map((index) => {
+              const etime = index.event;
+              if (etime === "Never" || !etime) {
+                index.event = etime;
+              } else {
+                index.event = etime.replace(/\+09:00/, "").replace(/\?/, "");
+                index.delta = (today - new Date(index.event)) / 1000;
+              }
+            });
+
+            setGetReport(sortedData);
+          }
+        )
       )
       .catch((error) => {
         console.error(error);
@@ -99,12 +162,16 @@ function ArchiverMon() {
   return (
     <div>
       <h2>아카이버 어플라이언스 관리 목록</h2>
-      <div>
-        <h3>전체 아카이빙 갯수 : </h3>
-        <h3>{getReport.length}</h3>
+      <div className={styled.chartBody}>
+        <Statistics />
+        <DiscoList
+          allsize={allList}
+          size={disList}
+          noevent={eventList}
+          paused={pausedCnt}
+          resno={recentNo}
+        />
       </div>
-      <Statistics />
-      <DiscoList />
       <div className={styled.tableBody}>
         <div className={styled.formBox}>
           <Link to="/archiverStatus">
