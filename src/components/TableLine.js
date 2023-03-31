@@ -2,10 +2,13 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import styled from "./TableLine.module.css";
 import { useState } from "react";
-import DetailModal from "./DetailModal";
+
+import { useDispatch } from "react-redux";
+import { setBoolValue, updateInfo } from "../actions/actions";
 
 function TableLine({ pvname, state, Constate, evttime, delta }) {
-  const [modalOpen, setModalOpen] = useState(false);
+  //redux
+  const dispatch = useDispatch();
   const pauseStart = (name) => {
     axios
       .post(`/mgmt/bpl/pauseArchivingPV?pv=${name}`, 1)
@@ -29,8 +32,37 @@ function TableLine({ pvname, state, Constate, evttime, delta }) {
   };
 
   const detailPage = (name) => {
-    console.log(name);
-    setModalOpen(true);
+    axios
+      .get(`/mgmt/bpl/getPVDetails?pv=${name}`)
+      .then((response) => {
+        const getData = response.data;
+
+        const filterData = getData.filter(
+          (item) =>
+            item.name === "Precision:" ||
+            item.name === "PV Name" ||
+            item.name === "Extra info - RTYP:" ||
+            item.name === "Is this a scalar:" ||
+            item.name === "Archival params creation time:" ||
+            item.name === "Archival params modification time:" ||
+            item.name === "Is this PV paused:" ||
+            item.name === "Sampling method:" ||
+            item.name === "Sampling Period:" ||
+            item.name === "Are we using PVAccess:" ||
+            item.name === "Sampling Period:" ||
+            item.name === "Estimated event rate (events/sec)" ||
+            item.name === "Estimated storage rate (MB/day)" ||
+            item.name === "Sample buffer capacity" ||
+            item.name === "Time elapsed since search request (s)"
+        );
+
+        dispatch(updateInfo(filterData));
+
+        dispatch(setBoolValue(true));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

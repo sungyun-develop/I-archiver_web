@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
 
 import { useDispatch } from "react-redux";
-import { addData, updateData } from "../actions/actions";
+import { addData, updateData, setBoolValue } from "../actions/actions";
+import { useSelector } from "react-redux";
 
 import styled from "./ArchiverMon.module.css";
 import TableBox from "../components/TableBox/TableBox";
 import reloadImg from "../img/reload.png";
 import Statistics from "../components/Statistics";
 import DiscoList from "../components/DiscoList";
+import DetailModal from "../components/DetailModal";
 
 axios.defaults.withCredentials = true;
 
@@ -28,6 +30,7 @@ function ArchiverMon() {
 
   //redux
   const dispatch = useDispatch();
+  const modalState = useSelector((state) => state.modalState);
 
   const getAPI = () => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -190,6 +193,9 @@ function ArchiverMon() {
               />
             </button>
           </Link>
+
+          <DetailModal isOpen={modalState} />
+
           <form className={styled.searchingForm} onSubmit={handleFormSubmit}>
             <input
               placeholder="PV 이름을 검색해주세요"
