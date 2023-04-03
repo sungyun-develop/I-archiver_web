@@ -5,7 +5,7 @@ import CaData from "./routes/CaData";
 import RWfiles from "./routes/RWfiles";
 import Nms from "./routes/Nms";
 import ArchiverMon from "./routes/ArchiverMon";
-import KomacArch from "./routes/KomacArch";
+import KomacHome from "./routes/KomacHome";
 import NoeventTable from "./components/noeventtable/NoeventTable";
 
 function App() {
@@ -21,8 +21,8 @@ function App() {
         <Link to="/read&write">
           <h1> Go to file test</h1>
         </Link>
-        <Link to="/komac_archiver">
-          <h1> Go to archiver Home</h1>
+        <Link to="/home">
+          <h1> Go to Home</h1>
         </Link>
         <Link to="/archiverStatus">
           <h1> Go to archiver status</h1>
@@ -32,7 +32,7 @@ function App() {
         <Route path="/archiver" element={<Home />} />
         <Route path="/ca" element={<CaData />} />
         <Route path="/read&write" element={<RWfiles />} />
-        <Route path="/komac_archiver" element={<KomacArch />} />
+        <Route path="/home" element={<KomacHome />} />
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
       </Routes>

@@ -7,7 +7,7 @@ function BarGraph({ data, width, height }) {
       <XAxis dataKey="name" />
       <YAxis domain={[0, 30]} />
       <Tooltip />
-      <Legend />
+
       <Bar dataKey="value" barSize={150} fill="#8884d8" />
     </BarChart>
   );

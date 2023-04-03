@@ -2,8 +2,17 @@ import React, { useEffect, useState } from "react";
 import Chart2 from "../components/Chart2";
 import styled from "./CaData.module.css";
 import BarGraph from "../components/chart/BarGraph";
+import { useDispatch } from "react-redux";
+import { updateCurravg, updateBCM } from "../actions/actions";
+import { useSelector } from "react-redux";
 
 function CaData() {
+  //redux
+  const dispatch = useDispatch();
+  const [beamCurr, setBeamCurr] = useState(0);
+  const bestCurr = useSelector((state) => state.beamCurr.data);
+  const bestDTL20BCM = useSelector((state) => state.dtl20BCM.data);
+
   const [getionCURR, setGetionCURR] = useState(0);
   const [getlebtCURR, setGetlebtCURR] = useState(0);
   const [getrfqCURR, setGetrfqCURR] = useState(0);
@@ -60,6 +69,7 @@ function CaData() {
       { name: "dtl24", value: json.dtl24CURR },
       { name: "dtl107", value: json.dtl107CURR },
     ];
+
     setCurrArray(getCurrArr);
     setMaxCurr(getCurrArr);
     const getBeamSts = json.beamSTS;
@@ -101,7 +111,7 @@ function CaData() {
 
     const meancurr = getDtl107 * width * getRep * 0.001;
     setMeanCURR(meancurr.toFixed(3));
-    console.log(eng);
+
     setMeanPower((meancurr * eng).toFixed(3));
 
     const strArray0 = json.RFQ_BCM;
@@ -133,6 +143,17 @@ function CaData() {
     }
 
     setChartData(tempData);
+
+    let avg = 0;
+    const avgVal = getCurrArr.map((item) => {
+      avg += Number(item.value);
+    });
+    avg = (avg / 7).toFixed(4);
+    if (avg > beamCurr) {
+      setBeamCurr(avg);
+      dispatch(updateCurravg(getCurrArr));
+      dispatch(updateBCM(tempData));
+    }
   };
   useEffect(() => {
     getAPI();

@@ -17,3 +17,13 @@ export const updateInfo = (data) => ({
   type: "UPDATE_INFO",
   payload: data,
 });
+
+export const updateCurravg = (data) => ({
+  type: "UPDATE_CURR",
+  payload: data,
+});
+
+export const updateBCM = (data) => ({
+  type: "UPDATE_BCM",
+  payload: data,
+});
