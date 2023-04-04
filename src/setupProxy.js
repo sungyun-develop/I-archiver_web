@@ -8,4 +8,11 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    "/alarm",
+    createProxyMiddleware({
+      target: "http://192.168.100.39:9200",
+      changeOrigin: true,
+    })
+  );
 };

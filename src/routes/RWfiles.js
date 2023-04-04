@@ -1,5 +1,4 @@
 import axios from "axios";
-import { get } from "lodash";
 
 import { useState, useEffect } from "react";
 import styled from "./RWfiles.module.css";

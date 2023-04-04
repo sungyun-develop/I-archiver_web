@@ -7,6 +7,7 @@ import Nms from "./routes/Nms";
 import ArchiverMon from "./routes/ArchiverMon";
 import KomacHome from "./routes/KomacHome";
 import NoeventTable from "./components/noeventtable/NoeventTable";
+import AlarmMon from "./routes/AlarmMon";
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
         <Link to="/archiverStatus">
           <h1> Go to archiver status</h1>
         </Link>
+        <Link to="/alarmStatus">
+          <h1> Go to alarm status</h1>
+        </Link>
       </div>
       <Routes>
         <Route path="/archiver" element={<Home />} />
@@ -35,6 +39,7 @@ function App() {
         <Route path="/home" element={<KomacHome />} />
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
+        <Route path="/alarmStatus" element={<AlarmMon />} />
       </Routes>
     </BrowserRouter>
   );
