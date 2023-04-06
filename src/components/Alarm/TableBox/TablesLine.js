@@ -34,6 +34,7 @@ function TablesLine({ pvname, evttime, value, state, CurrState, ack }) {
   let eTime = new Date(evttime);
   eTime.setHours(eTime.getHours() + 9);
   const eventTime = eTime.toLocaleString();
+
   return (
     <tr
       className={
@@ -43,7 +44,9 @@ function TablesLine({ pvname, evttime, value, state, CurrState, ack }) {
           ? styled.statusColor1
           : state === "MAJOR_ACK"
           ? styled.statusColor2
-          : styled.statusColor3
+          : state === "MINOR"
+          ? styled.statusColor3
+          : styled.statusColor4
       }
     >
       <td

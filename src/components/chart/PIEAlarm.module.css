@@ -26,6 +26,10 @@
   color: #3cb371;
 }
 
-.list > li:last-child::marker {
+.list > li:nth-child(5)::marker {
   color: #c71585;
+}
+
+.list > li:last-child::marker {
+  color: #708090;
 }

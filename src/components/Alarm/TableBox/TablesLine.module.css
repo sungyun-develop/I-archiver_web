@@ -26,11 +26,20 @@
 }
 
 .statusColor3 {
-  background-color: rgba(222, 222, 222, 0.7);
+  background-color: rgba(240, 130, 20, 0.7);
   transition: all 0.2s ease-in-out;
 }
 
 .statusColor3:hover {
+  background-color: rgba(240, 130, 20, 1);
+}
+
+.statusColor4 {
+  background-color: rgba(222, 222, 222, 0.7);
+  transition: all 0.2s ease-in-out;
+}
+
+.statusColor4:hover {
   background-color: rgba(222, 222, 222, 1);
 }
 

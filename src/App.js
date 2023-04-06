@@ -33,7 +33,7 @@ function App() {
         </Link>
       </div>
       <Routes>
-        <Route path="/alarm" element={<AlarmMon />} />
+        <Route path="/alarm/*" element={<AlarmMon />} />
         <Route path="/archiver" element={<Home />} />
         <Route path="/ca" element={<CaData />} />
         <Route path="/read&write" element={<RWfiles />} />

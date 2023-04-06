@@ -8,11 +8,15 @@ function Tables({ array }) {
   const itemPerPage = 100;
   const indexOfLastItem = currentPage * itemPerPage;
   const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItems = array.slice(indexOfFirstItem, indexOfLastItem);
+  let currentItems = array.slice(indexOfFirstItem, indexOfLastItem);
   const totalItems = array.length;
   const totalPage = Math.ceil(totalItems / itemPerPage);
   const PageGroupSIze = 10;
   const currentGroup = Math.ceil(currentPage / PageGroupSIze);
+  if (array.length < 100) {
+    currentItems = array;
+  }
+
   const renderPageNum = () => {
     const pages = [];
     const strPage = (currentGroup - 1) * PageGroupSIze + 1;
@@ -86,6 +90,7 @@ function Tables({ array }) {
       behavior: "smooth",
     });
   };
+
   return (
     <div>
       <table className={styled.table0}>

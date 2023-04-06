@@ -33,6 +33,10 @@
   color: #87ceeb;
 }
 
+.timeTitle:hover {
+  color: black;
+}
+
 .contentBody {
   display: flex;
   align-items: center;

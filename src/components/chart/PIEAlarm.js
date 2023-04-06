@@ -3,7 +3,14 @@ import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import styled from "./PIEAlarm.module.css";
 
 function PIEAlarm({ data }) {
-  const colors = ["#0088FE", "#DD2c00", "#F4A460", "#3CB371", "#C71585"];
+  const colors = [
+    "#0088FE",
+    "#DD2c00",
+    "#F4A460",
+    "#3CB371",
+    "#C71585",
+    "#708090",
+  ];
 
   return (
     <div className={styled.chartBody}>

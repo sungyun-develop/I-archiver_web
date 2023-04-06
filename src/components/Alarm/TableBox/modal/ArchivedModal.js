@@ -106,12 +106,12 @@ function ArchivedModal({ isOpen }) {
                 <tr>
                   <td>최대</td>
                   <td>{maxX}</td>
-                  <td>{maxVal}</td>
+                  <td>{maxVal.toFixed(5)}</td>
                 </tr>
                 <tr>
                   <td>최소</td>
                   <td>{minX}</td>
-                  <td>{minVal}</td>
+                  <td>{minVal.toFixed(5)}</td>
                 </tr>
               </tbody>
             </table>
