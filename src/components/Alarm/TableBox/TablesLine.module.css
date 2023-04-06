@@ -1,0 +1,39 @@
+.statusColor0 {
+  background-color: rgba(76, 244, 76, 0.7);
+  transition: all 0.2s ease-in-out;
+}
+
+.statusColor0:hover {
+  background-color: rgba(76, 244, 76, 1);
+}
+
+.statusColor1 {
+  background-color: rgba(244, 76, 76, 0.7);
+  transition: all 0.2s ease-in-out;
+}
+
+.statusColor1:hover {
+  background-color: rgba(244, 76, 76, 1);
+}
+
+.statusColor2 {
+  background-color: rgba(223, 160, 0, 0.7);
+  transition: all 0.2s ease-in-out;
+}
+
+.statusColor2:hover {
+  background-color: rgba(233, 160, 0, 1);
+}
+
+.statusColor3 {
+  background-color: rgba(222, 222, 222, 0.7);
+  transition: all 0.2s ease-in-out;
+}
+
+.statusColor3:hover {
+  background-color: rgba(222, 222, 222, 1);
+}
+
+.nameColumn {
+  cursor: pointer;
+}

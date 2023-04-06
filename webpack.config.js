@@ -43,4 +43,7 @@ module.exports = {
       child_process: false,
     },
   },
+  devServer: {
+    historyApiFallback: true,
+  },
 };

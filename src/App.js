@@ -13,6 +13,9 @@ function App() {
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
       <div>
+        <Link to="/alarm">
+          <h1> Go to alarm status</h1>
+        </Link>
         <Link to="/archiver">
           <h1>Go to archiver test</h1>
         </Link>
@@ -22,24 +25,21 @@ function App() {
         <Link to="/read&write">
           <h1> Go to file test</h1>
         </Link>
-        <Link to="/home">
+        <Link to="/">
           <h1> Go to Home</h1>
         </Link>
         <Link to="/archiverStatus">
           <h1> Go to archiver status</h1>
         </Link>
-        <Link to="/alarmStatus">
-          <h1> Go to alarm status</h1>
-        </Link>
       </div>
       <Routes>
+        <Route path="/alarm" element={<AlarmMon />} />
         <Route path="/archiver" element={<Home />} />
         <Route path="/ca" element={<CaData />} />
         <Route path="/read&write" element={<RWfiles />} />
-        <Route path="/home" element={<KomacHome />} />
+        <Route path="/" element={<KomacHome />} />
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
-        <Route path="/alarmStatus" element={<AlarmMon />} />
       </Routes>
     </BrowserRouter>
   );

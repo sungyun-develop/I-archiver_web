@@ -1,0 +1,31 @@
+.chartBody {
+  display: flex;
+  align-items: center;
+  border: 2px solid #48d1cc;
+  border-radius: 10px;
+  width: 600px;
+  height: 400px;
+}
+
+.list {
+}
+
+.list > li:first-child::marker {
+  color: #0088fe;
+}
+
+.list > li:nth-child(2)::marker {
+  color: #dd2c00;
+}
+
+.list > li:nth-child(3)::marker {
+  color: #f4a460;
+}
+
+.list > li:nth-child(4)::marker {
+  color: #3cb371;
+}
+
+.list > li:last-child::marker {
+  color: #c71585;
+}

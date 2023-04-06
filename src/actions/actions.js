@@ -1,3 +1,4 @@
+//archiver actions
 export const addData = (data) => ({
   type: "ADD_DATA",
   payload: data,
@@ -25,5 +26,21 @@ export const updateCurravg = (data) => ({
 
 export const updateBCM = (data) => ({
   type: "UPDATE_BCM",
+  payload: data,
+});
+
+//alarm actions
+export const setarcModalValue = (value) => ({
+  type: "UPDATE_arcSTATE",
+  payload: value,
+});
+
+export const updateAname = (data) => ({
+  type: "UPDATE_Aname",
+  payload: data,
+});
+
+export const updateAtime = (data) => ({
+  type: "UPDATE_Atime",
   payload: data,
 });

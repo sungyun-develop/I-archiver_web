@@ -1,0 +1,65 @@
+.mbox {
+  width: 1400px;
+  height: 850px;
+  z-index: 999;
+  position: absolute;
+  margin-left: 35%;
+  margin-top: 5%;
+  background-color: #fffafa;
+  border-radius: 10px;
+  border: 5px solid #87ceeb;
+}
+
+.btn_close {
+  display: inline-block;
+  background-color: transparent;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn_close:after {
+  display: inline-block;
+  content: "\00d7";
+  font-size: 60px;
+}
+
+.btn_close:hover {
+  color: red;
+}
+
+.timeTitle {
+  margin-left: 20px;
+  text-decoration: underline;
+  color: #87ceeb;
+}
+
+.contentBody {
+  display: flex;
+  align-items: center;
+}
+
+.chartSty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2 ease-in-out;
+}
+
+.chartSty:hover + .infos {
+  border-color: #ffa500;
+}
+
+.infos {
+  border: 5px solid #87ceeb;
+  border-radius: 5px;
+  width: 300px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.infos > table {
+  width: 90%;
+  font-size: 20px;
+  font-weight: bold;
+}

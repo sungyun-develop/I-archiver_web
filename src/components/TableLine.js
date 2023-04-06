@@ -9,6 +9,7 @@ import { setBoolValue, updateInfo } from "../actions/actions";
 function TableLine({ pvname, state, Constate, evttime, delta }) {
   //redux
   const dispatch = useDispatch();
+
   const pauseStart = (name) => {
     axios
       .post(`/mgmt/bpl/pauseArchivingPV?pv=${name}`, 1)

@@ -1,0 +1,38 @@
+.table0 {
+  display: flexbox;
+  text-align: center;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  padding: 100px;
+  font-size: 25px;
+}
+
+.table0Head {
+  border: 2px solid black;
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+.pagination {
+  color: blue;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pagination > li {
+  list-style: none;
+  cursor: pointer;
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.pagination > li:hover {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.leadli {
+  text-decoration: underline;
+}
