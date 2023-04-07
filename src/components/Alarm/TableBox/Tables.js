@@ -100,8 +100,8 @@ function Tables({ array }) {
             <td>EVENT TIME</td>
             <td>VALUE</td>
             <td>ALARM SEVERITY</td>
+            <td>MESSAGE</td>
             <td>CURRENT STATUS</td>
-            <td>확인</td>
           </tr>
         </thead>
         <tbody>
@@ -112,8 +112,8 @@ function Tables({ array }) {
               evttime={index.time}
               value={index.value}
               state={index.status}
+              message={index.message}
               CurrState={index.current}
-              ack={index.ack}
             />
           ))}
         </tbody>

@@ -8,6 +8,7 @@ import ArchiverMon from "./routes/ArchiverMon";
 import KomacHome from "./routes/KomacHome";
 import NoeventTable from "./components/noeventtable/NoeventTable";
 import AlarmMon from "./routes/AlarmMon";
+import Manual from "./routes/Manual";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/" element={<KomacHome />} />
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
+        <Route path="/manual" element={<Manual />} />
       </Routes>
     </BrowserRouter>
   );

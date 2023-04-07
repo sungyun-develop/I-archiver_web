@@ -85,3 +85,18 @@
   transform: rotate(0deg);
   transition: transform 2s ease-in-out;
 }
+
+.summary {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  justify-content: center;
+  margin-bottom: 100px;
+}
+
+.sumChi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 10px;
+}

@@ -22,13 +22,13 @@ function PIEAlarm({ data }) {
         ))}
       </ul>
 
-      <PieChart width={400} height={400}>
+      <PieChart width={700} height={700}>
         <Pie
           data={data}
           dataKey="value"
           nameKey="name"
-          innerRadius={100}
-          outerRadius={150}
+          innerRadius={150}
+          outerRadius={250}
           cx="50%"
           cy="50%"
         >

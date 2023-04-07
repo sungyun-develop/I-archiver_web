@@ -10,7 +10,7 @@ import {
   updateAtime,
 } from "../../../actions/actions";
 
-function TablesLine({ pvname, evttime, value, state, CurrState, ack }) {
+function TablesLine({ pvname, evttime, value, state, message, CurrState }) {
   //redux
   const dispatch = useDispatch();
 
@@ -58,8 +58,8 @@ function TablesLine({ pvname, evttime, value, state, CurrState, ack }) {
       <td>{eventTime}</td>
       <td>{value}</td>
       <td>{state}</td>
+      <td>{message}</td>
       <td>{CurrState}</td>
-      <td>{ack}</td>
     </tr>
   );
 }
@@ -69,8 +69,8 @@ TablesLine.propTypes = {
   evttime: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   state: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
   CurrState: PropTypes.string.isRequired,
-  ack: PropTypes.string.isRequired,
 };
 
 export default TablesLine;

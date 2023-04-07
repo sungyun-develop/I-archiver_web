@@ -1,0 +1,37 @@
+.summary {
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+  height: 600px;
+  border: 2px solid #48d1cc;
+  border-radius: 10px;
+  margin-left: 30px;
+  background-color: #f0fff0;
+}
+
+.indexInfo {
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.title {
+  margin-left: 20px;
+  font-weight: bolder;
+}
+
+.recentInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-left: 15px;
+  padding: 5px;
+  width: 60%;
+  background-color: #90ee90;
+  color: #b22222;
+  font-weight: bolder;
+  border-radius: 15px;
+}
+
+.recentInfo > h2 {
+  margin-left: 10px;
+}

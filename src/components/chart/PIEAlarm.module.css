@@ -3,11 +3,18 @@
   align-items: center;
   border: 2px solid #48d1cc;
   border-radius: 10px;
-  width: 600px;
-  height: 400px;
+  width: 1000px;
+  height: 600px;
+  justify-content: center;
+  background-color: #f0fff0;
 }
 
 .list {
+  margin: 0px 30px;
+}
+
+.list > li {
+  font-size: 30px;
 }
 
 .list > li:first-child::marker {

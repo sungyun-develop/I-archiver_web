@@ -6,10 +6,15 @@ import PIEAlarm from "../components/chart/PIEAlarm";
 import { useDispatch, useSelector } from "react-redux";
 import ArchivedModal from "../components/Alarm/TableBox/modal/ArchivedModal";
 import styled from "./AlarmMon.module.css";
-import Operator from "../components/Alarm/components/Operator";
+import Infos from "../components/Alarm/components/Infos";
+import Summary from "../components/Alarm/components/Summary";
 
 function AlarmMon() {
   const [alarmCnt, setAlarmCnt] = useState(0);
+  const [indexInfo, setIndexInfo] = useState("");
+  const [indexCnt, setIndexCnt] = useState(0);
+  const [recentName, setRecentName] = useState("");
+  const [recentTime, setRecentTime] = useState("");
   const [statCnt, setStatCnt] = useState([]);
   const [alarmData, setAlarmData] = useState([]);
   const [searchData, setSearchData] = useState([]);
@@ -27,6 +32,13 @@ function AlarmMon() {
     ).json();
     setAlarmCnt(json.count);
     getLog();
+  };
+
+  const latestCnt = async (name) => {
+    const json = await (
+      await fetch(`http://192.168.100.39:9200/${name}/_count`)
+    ).json();
+    setIndexCnt(json.count);
   };
 
   const getSearchResult = async (name) => {
@@ -52,22 +64,22 @@ function AlarmMon() {
               },
             ],
             from: 0,
-            size: 2000,
+            size: 5000,
           }),
         }
       )
     ).json();
     const logs = json.hits.hits;
-    console.log(logs);
+
     const recentLogs = logs.map((index) => ({
       name: index._source.pv,
       time: index._source.time,
       value: index._source.value,
       status: index._source.severity,
+      message: index._source.message,
       current: index._source.current_message,
-      ack: index._source.notify,
     }));
-    console.log(recentLogs);
+
     setSearchData(recentLogs);
   };
   const getLog = async () => {
@@ -91,20 +103,26 @@ function AlarmMon() {
               },
             ],
             from: 0,
-            size: 2000,
+            size: 5000,
           }),
         }
       )
     ).json();
 
     const logs = json.hits.hits;
+
+    let latestName = logs[0]._index;
+    const latestIndex = latestCnt(latestName);
+    setIndexInfo(latestName);
+    setRecentName(logs[0]._source.pv);
+    setRecentTime(logs[0]._source.message_time);
     const recentLogs = logs.map((index) => ({
       name: index._source.pv,
       time: index._source.time,
       value: index._source.value,
       status: index._source.severity,
+      message: index._source.message,
       current: index._source.current_message,
-      ack: index._source.notify,
     }));
     setAlarmData(recentLogs);
 
@@ -158,7 +176,7 @@ function AlarmMon() {
     getCnt();
     const intervalld = setInterval(() => {
       getCnt();
-    }, 2000);
+    }, 5000);
     return () => clearInterval(intervalld);
   }, []);
 
@@ -188,13 +206,26 @@ function AlarmMon() {
 
   return (
     <div>
-      <h1>alarm status</h1>
-      <h2>기록된 총 알람 수 : {alarmCnt}개</h2>
-      <h3>
-        table 클릭 시 각 이름 별 event 발생 시간 전후 1시간 데이터 보여주기
-      </h3>
-      <PIEAlarm key={statCnt} data={statCnt} />
-      <Operator />
+      <div className={styled.summary}>
+        <div className={styled.sumChi}>
+          <h1>최근 알람현황 (5000개)</h1>
+          <PIEAlarm key={statCnt} data={statCnt} />
+        </div>
+        <div className={styled.sumChi}>
+          <h1>알람시스템 현황</h1>
+          <Summary
+            cnt={alarmCnt}
+            index={indexInfo}
+            indexCnt={indexCnt}
+            name={recentName}
+            time={recentTime}
+          />
+        </div>
+        <div className={styled.sumChi}>
+          <h1>장치별 담당자</h1>
+          <Infos />
+        </div>
+      </div>
       <div className={styled.formBox}>
         <Link to="/alarm">
           <button type="button" className={styled.reload}>
