@@ -35,6 +35,7 @@ function ArchivedModal({ isOpen }) {
         `http://192.168.100.178:17668/retrieval/data/getData.json?pv=${newname}&from=${strT}&to=${endT}`
       )
     ).json();
+    console.log(json);
     setRealT(new Date(realTime).toString());
     setGetArray(json[0].data);
   };

@@ -53,15 +53,26 @@
   transition: all 0.4 ease-in-out;
 }
 
-.manual {
+li:hover {
+  color: #f0fff0;
+}
+
+.link {
+  transition: all 0.3s ease-in-out;
   margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.manual {
   padding: 5px;
   background-color: #ffa07a;
   border-radius: 20px;
-  font-size: 18px;
+  font-size: 17px;
   text-decoration: none;
   color: black;
-  transition: all 0.3s ease-in-out;
 }
 
 .manual:hover {
@@ -71,6 +82,22 @@
   text-decoration: underline;
 }
 
-.manual:hover ~ .oper {
+.logbook {
+  padding: 15px;
+  background-color: #ffa07a;
+  border-radius: 20px;
+  font-size: 20px;
+  text-decoration: none;
+  color: black;
+}
+
+.logbook:hover {
+  font-size: 26px;
+  color: aliceblue;
+  background-image: linear-gradient(to bottom right, #ffa07a, #f0e68c);
+  text-decoration: underline;
+}
+
+.link:hover ~ .oper {
   transform: rotateY(-30deg) skewY(5deg);
 }

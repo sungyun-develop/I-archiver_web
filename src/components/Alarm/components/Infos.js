@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 function Infos() {
   return (
     <div className={styled.body}>
-      <a href="/manual" className={styled.manual}>
-        <h2>조치 메뉴얼 바로가기</h2>
-      </a>
+      <div className={styled.link}>
+        <a href="/manual" className={styled.manual}>
+          <h2>메뉴얼 바로가기</h2>
+        </a>
+        <h2 className={styled.logbook}>Logbook 바로가기</h2>
+      </div>
+
       <div className={styled.oper}>
         <h2>가속기 운영 총괄 : 윤상필</h2>
         <div className={styled.info}>
