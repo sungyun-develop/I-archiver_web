@@ -25,11 +25,17 @@
   grid-template-columns: 1fr 1fr;
   margin-left: 15px;
   padding: 5px;
-  width: 60%;
+  width: 80%;
   background-color: #90ee90;
   color: #b22222;
   font-weight: bolder;
   border-radius: 15px;
+}
+
+.recentInfo:hover {
+  color: #f5fffa;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .recentInfo > h2 {
