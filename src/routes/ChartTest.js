@@ -5,6 +5,7 @@ import {
   line,
   curveCardinal,
   scaleLinear,
+  scaleBand,
 } from "d3";
 import { useEffect, useRef, useState } from "react";
 import styled from "./ChartTest.module.css";
@@ -23,11 +24,16 @@ function ChartTest() {
   };
   useEffect(() => {
     const svg = select(svgRef.current);
-    const xScale = scaleLinear()
-      .domain([0, data.length - 1])
-      .range([0, 300]);
+    const xScale = scaleBand()
+      .domain(data.map((value, index) => index))
+      .range([0, 300])
+      .padding(0.5);
 
-    const yScale = scaleLinear().domain([0, 75]).range([150, 0]);
+    const yScale = scaleLinear().domain([0, 150]).range([150, 0]);
+    const colorScale = scaleLinear()
+      .domain([75, 100, 150])
+      .range(["green", "yellow", "red"])
+      .clamp(true);
     const xAxis = axisBottom(xScale)
       .ticks(data.length)
       .tickFormat((index) => index + 1);
@@ -36,6 +42,20 @@ function ChartTest() {
     const yAxis = axisRight(yScale);
     svg.select(".y-axis").style("transform", "translateX(300px)").call(yAxis);
 
+    svg
+      .selectAll(".bar")
+      .data(data)
+      .join("rect")
+      .attr("class", "bar")
+      .style("transform", "scale(1,-1)")
+      .attr("x", (value, index) => xScale(index))
+      .attr("y", -150)
+      .attr("width", xScale.bandwidth())
+      .attr("height", (value) => 150 - yScale(value))
+      .attr("fill", colorScale)
+      .transition();
+
+    /*
     const myLine = line()
       .x((value, index) => xScale(index))
       .y(yScale)
@@ -49,6 +69,7 @@ function ChartTest() {
       .attr("d", myLine)
       .attr("fill", "none")
       .attr("stroke", "green");
+*/
 
     getAPI();
   }, [data]);
