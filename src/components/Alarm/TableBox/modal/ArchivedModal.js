@@ -13,31 +13,39 @@ function ArchivedModal({ isOpen }) {
   const time = useSelector((state) => state.alarmtime.data);
   const [realT, setRealT] = useState("");
   const [getArray, setGetArray] = useState([]);
+  const [noData, setNoData] = useState(0);
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch(setarcModalValue(false));
   };
 
   const getAPI = async () => {
-    const newname = name.replace(/:/g, "%3A");
+    try {
+      const newname = name.replace(/:/g, "%3A");
 
-    let offset = new Date(time).getTimezoneOffset() * 60000;
+      let offset = new Date(time).getTimezoneOffset() * 60000;
 
-    const realTime = new Date(time) - offset;
-    const strTime = new Date(realTime - 0.3 * 3600 * 1000).toISOString();
-    const endTime = new Date(realTime + 0.3 * 3600 * 1000).toISOString();
+      const realTime = new Date(time) - offset;
+      const strTime = new Date(realTime - 0.3 * 3600 * 1000).toISOString();
+      const endTime = new Date(realTime + 0.3 * 3600 * 1000).toISOString();
 
-    const strT = strTime.replace(/:/g, "%3A");
-    const endT = endTime.replace(/:/g, "%3A");
+      const strT = strTime.replace(/:/g, "%3A");
+      const endT = endTime.replace(/:/g, "%3A");
 
-    const json = await (
-      await fetch(
-        `http://192.168.100.178:17668/retrieval/data/getData.json?pv=${newname}&from=${strT}&to=${endT}`
-      )
-    ).json();
-    console.log(json);
-    setRealT(new Date(realTime).toString());
-    setGetArray(json[0].data);
+      const json = await (
+        await fetch(
+          `http://192.168.100.178:17668/retrieval/data/getData.json?pv=${newname}&from=${strT}&to=${endT}`
+        )
+      ).json();
+      console.log(json);
+      setRealT(new Date(realTime).toString());
+      setGetArray(json[0].data);
+      setNoData(0);
+    } catch (error) {
+      console.error(error);
+      console.log("no data");
+      setNoData(1);
+    }
   };
 
   useEffect(() => {
@@ -93,6 +101,10 @@ function ArchivedModal({ isOpen }) {
         className={styled.btn_close}
         onClick={closeModal}
       ></button>
+      <div className={noData === 1 ? styled.nodata : styled.yesdata}>
+        <h1>아카이빙 PV가 아닙니다.</h1>
+        <h3>(아카이빙이 필요할 경우 담당자에게 문의)</h3>
+      </div>
       <div>
         <h1 className={styled.timeTitle}>이벤트 발생 시간 {realT}</h1>
         <div className={styled.contentBody}>

@@ -7,7 +7,7 @@ function Home() {
   const getAPI = async () => {
     const json = await (
       await fetch(
-        `http://192.168.100.178:17668/retrieval/data/getData.json?pv=RFQ%3ACT%3ACURR&from=2023-03-03T05%3A00%3A00.000Z&to=2023-03-03T12%3A00%3A00.000Z`
+        `http://192.168.100.178:17668/retrieval/data/getData.json?pv=RFQ%3AAmp&from=2023-03-03T05%3A00%3A00.000Z&to=2023-03-03T10%3A00%3A00.000Z`
       )
     ).json();
 

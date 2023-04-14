@@ -9,6 +9,7 @@ import KomacHome from "./routes/KomacHome";
 import NoeventTable from "./components/noeventtable/NoeventTable";
 import AlarmMon from "./routes/AlarmMon";
 import Manual from "./routes/Manual";
+import ChartTest from "./routes/ChartTest";
 
 function App() {
   return (
@@ -32,6 +33,9 @@ function App() {
         <Link to="/archiverStatus">
           <h1> Go to archiver status</h1>
         </Link>
+        <Link to="/chartTest">
+          <h1> Go to zoomable chart</h1>
+        </Link>
       </div>
       <Routes>
         <Route path="/alarm/*" element={<AlarmMon />} />
@@ -42,6 +46,7 @@ function App() {
         <Route path="/archiverStatus/*" element={<ArchiverMon />} />
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
         <Route path="/manual" element={<Manual />} />
+        <Route path="/chartTest" element={<ChartTest />} />
       </Routes>
     </BrowserRouter>
   );

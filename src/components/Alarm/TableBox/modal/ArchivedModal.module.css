@@ -67,3 +67,16 @@
   font-size: 20px;
   font-weight: bold;
 }
+
+.nodata {
+  display: block;
+  position: absolute;
+  top: 35%;
+  left: 15%;
+  font-size: 30px;
+  color: #dc143c;
+}
+
+.yesdata {
+  display: none;
+}
