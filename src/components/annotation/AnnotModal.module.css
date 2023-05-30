@@ -1,0 +1,78 @@
+.annotBox {
+  background-color: beige;
+  display: flex;
+  width: 400px;
+  height: 530px;
+  border: 3px solid black;
+  border-radius: 5%;
+  position: absolute;
+  top: 300px;
+  left: 500px;
+}
+
+.btn_close {
+  display: inline-block;
+  background-color: transparent;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn_close:after {
+  display: inline-block;
+  content: "\00d7";
+  font-size: 60px;
+}
+
+.btn_close:hover {
+  color: red;
+}
+
+.eachObj {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  justify-content: center;
+}
+
+.colorMap {
+  border: 5px solid wheat;
+  margin-left: 10%;
+}
+
+.colorPicker {
+  position: absolute;
+  top: 130px;
+  left: 40px;
+}
+
+.selectorSize {
+  font-size: 15px;
+  font-weight: bolder;
+}
+
+.title {
+  width: 100%;
+  font-size: 20px;
+  border: none;
+  border-bottom: solid #aaaaaa 2px;
+  background-color: beige;
+}
+
+.content {
+  height: 150px;
+  width: 70%;
+  position: absolute;
+  left: 90px;
+  top: 300px;
+  font-size: 20px;
+}
+
+.savedBtn {
+  width: 200px;
+  height: 40px;
+  position: absolute;
+  top: 470px;
+  left: 100px;
+  border-radius: 5%;
+  background-color: cornflowerblue;
+}
