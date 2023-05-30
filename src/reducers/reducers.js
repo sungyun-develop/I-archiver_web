@@ -9,6 +9,8 @@ import bcmReducer from "./component/bcmReducer";
 import arcmodalReducer from "./component/arcmodalReducer";
 import AnameReducer from "./component/AnameReducer";
 import AtimeReducer from "./component/AtimeReducer";
+import modalStateReducer2 from "./component/modalStateReducer2";
+import AnnotationContent from "./component/AnnotationContent";
 
 const persistConfig = {
   key: "root",
@@ -25,6 +27,8 @@ const rootReducer = combineReducers({
   arcmodalSts: arcmodalReducer,
   alarmname: AnameReducer,
   alarmtime: AtimeReducer,
+  modalstate: modalStateReducer2,
+  annotContent: AnnotationContent,
 });
 
 export default persistReducer(persistConfig, rootReducer);

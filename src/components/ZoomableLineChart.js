@@ -18,6 +18,10 @@ import useResizeObserver from "./useResizeObserver";
 import styled from "./ZoomableLineChart.module.css";
 import "./Zoom.css";
 import MakeAnnotations from "../components/analysisTools/MakeAnnotation";
+import AnnotModal from "./annotation/AnnotModal";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setModalstate } from "../actions/actions";
 
 function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
   const svgRef = useRef();
@@ -31,6 +35,28 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
 
   const [zoomPos, setZoomPos] = useState(0);
   const [annotationGrp, setAnnotationGrp] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [pickedAnnot, setPickedAnnot] = useState([]);
+  const modalState = useSelector((state) => state.modalstate);
+  const updatedContent = useSelector((state) => state.annotContent.data);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("updatedContent!");
+    console.log(updatedContent);
+    if (updatedContent.length > 0) {
+      const selectedIdx = updatedContent[0];
+
+      const oldContent = annotationGrp[selectedIdx];
+      console.log(oldContent);
+      oldContent[0].color = updatedContent[1];
+      oldContent[0].note.title = updatedContent[3];
+      oldContent[0].note.label = updatedContent[4];
+
+      console.log(oldContent[0]);
+      annotationGrp[selectedIdx] = oldContent;
+    }
+  }, [updatedContent]);
 
   // will be called initially and on every data change
   useEffect(() => {
@@ -195,6 +221,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
             idx: dataIndex,
             id: annotationGrp.length,
             connector: { end: "arrow" },
+            color: "#808080",
           },
         ];
 
@@ -250,10 +277,15 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
           });
 
           setAnnotationGrp(updatedAnnotations);
+        })
+        .on("noteclick", (annotation) => {
+          console.log("noteclick!!");
+          console.log(annotationGrp[annotation.id]);
+          setPickedAnnot([annotation.id, annotation.note, annotation.color]);
+          dispatch(setModalstate(true));
+          setIsOpen(true);
         });
 
-      console.log(updatedAnnotations);
-      console.log(annotationGrp);
       // 기존 annotation 그룹 제거
       svgContent.selectAll(".commentBoxs").remove();
 
@@ -289,7 +321,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       });
 
     svg.call(zoomBehavior);
-  }, [currentZoomState, data, dimensions, comment]);
+  }, [currentZoomState, data, dimensions, comment, modalState, updatedContent]);
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -381,6 +413,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
           <g className="y-axis" />
         </svg>
       </div>
+      {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
     </React.Fragment>
   );
 }

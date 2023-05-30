@@ -44,3 +44,13 @@ export const updateAtime = (data) => ({
   type: "UPDATE_Atime",
   payload: data,
 });
+
+export const setModalstate = (value) => ({
+  type: "UPDATE_MODAL",
+  payload: value,
+});
+
+export const updateAnnotContent = (data) => ({
+  type: "UPDATE_AContent",
+  payload: data,
+});

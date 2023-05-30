@@ -28,6 +28,7 @@
     "node-epics-ca": "^0.1.1",
     "os-browserify": "^0.3.0",
     "react": "^18.2.0",
+    "react-color": "^2.19.3",
     "react-datepicker": "^4.10.0",
     "react-datetime-picker": "^4.2.0",
     "react-dom": "^18.2.0",

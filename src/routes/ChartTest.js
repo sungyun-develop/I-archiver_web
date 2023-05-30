@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 import styled from "./ChartTest.module.css";
 import ZoomableLineChart from "../components/ZoomableLineChart";
+import ChartSearching from "../components/ChartSearching";
 
 function ChartTest() {
   const svgRef = useRef(null);
@@ -25,6 +26,7 @@ function ChartTest() {
     <React.Fragment>
       <h1>Zoomable Chart Test입니다.</h1>
       <h2>D3.js 연습</h2>
+      <ChartSearching />
       <ZoomableLineChart data={data} />
       <button
         onClick={() => setData([...data, Math.round(Math.random() * 100)])}
