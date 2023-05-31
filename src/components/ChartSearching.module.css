@@ -53,3 +53,101 @@
   right: 0%;
   border: 2px solid darkblue;
 }
+
+.searchingBoxBody {
+  display: flex;
+  justify-content: center;
+}
+
+.searchingResultBox {
+  border: 3px solid black;
+  width: 300px;
+  height: 500px;
+  overflow: auto;
+  padding-left: 0%;
+  text-align: center;
+}
+
+.searchingResultBox > li {
+  list-style-type: none;
+  border-bottom: 1px solid gray;
+  font-size: 20px;
+  padding: 5px;
+}
+
+.searchingResultBox > li:hover {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+.selectedItem {
+  background-color: #dcebff;
+  font-weight: bold;
+}
+
+.arrowBox {
+  width: 100px;
+  height: 500px;
+  position: absolute;
+}
+
+.rightArrow::before {
+  content: "";
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: calc(45%);
+  top: calc(40%);
+  border-left: 5px solid #000;
+  border-top: 5px solid #000;
+  transform: translate(-50%, -50%) rotate(135deg);
+}
+
+.rightArrow::after {
+  content: "";
+  width: 42px;
+  height: 5px;
+  position: absolute;
+  left: calc(24%);
+  top: calc(40% - 2px);
+  background: #000;
+}
+
+.leftArrow::before {
+  content: "";
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: calc(45%);
+  top: calc(60%);
+  border-left: 5px solid #000;
+  border-top: 5px solid #000;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.leftArrow::after {
+  content: "";
+  width: 42px;
+  height: 5px;
+  position: absolute;
+  left: calc(24%);
+  top: calc(60% - 2px);
+  background: #000;
+}
+
+.selectedResult {
+  border: 3px solid black;
+  width: 300px;
+  height: 500px;
+  overflow: auto;
+  margin-left: 160px;
+  padding-left: 0%;
+  text-align: center;
+}
+
+.selectedResult > li {
+  list-style-type: none;
+  border-bottom: 1px solid gray;
+  font-size: 20px;
+  padding: 5px;
+}
