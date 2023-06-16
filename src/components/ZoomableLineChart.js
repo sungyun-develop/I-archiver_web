@@ -41,6 +41,23 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
   const updatedContent = useSelector((state) => state.annotContent.data);
   const dispatch = useDispatch();
 
+  //input data formatting
+  const [dataKeys, setDataKeys] = useState([]);
+  const [dataValues, setDataValues] = useState([]);
+
+  console.log(data);
+  const dataLength = Object.keys(data).length;
+  console.log("----");
+  const [tempData, setTempData] = useState([]);
+
+  useEffect(() => {
+    if (dataLength !== 0) {
+      setDataKeys(Object.keys(data));
+      setDataValues(Object.values(data));
+      setTempData(Object.values(data)[0].y);
+    }
+  }, [dataLength]);
+
   useEffect(() => {
     console.log("updatedContent!");
     console.log(updatedContent);
@@ -53,10 +70,28 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       oldContent[0].note.title = updatedContent[3];
       oldContent[0].note.label = updatedContent[4];
 
-      console.log(oldContent[0]);
       annotationGrp[selectedIdx] = oldContent;
     }
   }, [updatedContent]);
+
+  const sampleData = (data, sampleSize) => {
+    if (data.length > sampleSize) {
+      const step = Math.floor(data.length / sampleSize);
+
+      const sampleData = [];
+      const sampleIndex = [];
+      for (let i = 0; i < data.length; i += step) {
+        sampleData.push(data[i]);
+        sampleIndex.push(i);
+      }
+      return { sampleData, sampleIndex };
+    } else {
+      return {
+        sampleData: data,
+        sampleIndex: Array.from({ length: data.length }, (_, i) => i),
+      };
+    }
+  };
 
   // will be called initially and on every data change
   useEffect(() => {
@@ -66,19 +101,41 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
     const { width, height } =
       dimensions || wrapperRef.current.getBoundingClientRect();
 
+    const sampledData = sampleData(tempData, 2000);
+    const sampledTempData = sampledData.sampleData;
+    const sampledDataIdx = sampledData.sampleIndex;
+    console.log("aasssss");
+    console.log("aaaaaaaaaaaaaaaaaaaa");
+    console.log(tempData);
+    console.log(tempData.length);
+    console.log(sampledTempData);
+    console.log(sampledDataIdx);
+    console.log("aaaaa");
+    console.log("aaaaaa");
+
     // scales + line generator
     const xScale = scaleLinear()
-      .domain([0, data.length - 1])
+      .domain([0, sampledTempData.length - 1])
       .range([20, width - 20]);
 
     if (currentZoomState) {
       const newXScale = currentZoomState.rescaleX(xScale);
+      console.log(newXScale.domain()[0]);
       setZoomPos(newXScale.domain()[0]);
       xScale.domain(newXScale.domain());
+      const zoomedStr = Math.floor(newXScale.domain()[0]);
+      const zoomedEnd = Math.floor(newXScale.domain()[1]);
+      console.log(zoomedStr);
+      console.log(zoomedEnd);
+      console.log("yyyyyyyyyyyyyyyyyy");
     }
 
+    const min_val = min(sampledTempData);
+    const max_val = max(sampledTempData);
+    const delta = max_val - min_val;
+
     const yScale = scaleLinear()
-      .domain([0, max(data)])
+      .domain([min(sampledTempData) - delta, max(sampledTempData)])
       .range([height - 70, 70]);
 
     const lineGenerator = line()
@@ -129,26 +186,25 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
 
     svgContent
       .selectAll(".myLine")
-      .data([data])
+      .data([sampledTempData])
       .join("path")
       .attr("class", "myLine")
       .attr("stroke", "blue")
       .attr("fill", "none")
       .attr("d", lineGenerator);
 
-    const maxData = max(data);
-    const minData = min(data);
+    const maxData = max(sampledTempData);
+    const minData = min(sampledTempData);
 
     svgContent
       .selectAll(".myDot")
-      .data(data)
+      .data(sampledTempData)
       .join("circle")
       .attr("class", "myDot")
       .attr("stroke", "black")
       .attr("r", 7)
       .attr("fill", (d) => (d === maxData || d === minData ? "red" : "yellow"))
       .attr("cx", (value, index) => {
-        console.log(`${index} : ${xScale(index)}`);
         return xScale(index);
       })
       .attr("cy", yScale)
@@ -321,7 +377,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       });
 
     svg.call(zoomBehavior);
-  }, [currentZoomState, data, dimensions, comment, modalState, updatedContent]);
+  }, [
+    currentZoomState,
+    tempData,
+    dimensions,
+    comment,
+    modalState,
+    updatedContent,
+  ]);
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -331,11 +394,11 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
 
     // scales + line generator
     const xScale = scaleLinear()
-      .domain([0, data.length - 1])
+      .domain([0, tempData.length - 1])
       .range([20, width - 20]);
 
     const yScale = scaleLinear()
-      .domain([0, max(data)])
+      .domain([0, max(tempData)])
       .range([height - 70, 70]);
 
     //draw a grid lines

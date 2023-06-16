@@ -3,12 +3,20 @@ import { useEffect, useRef, useState } from "react";
 import styled from "./ChartTest.module.css";
 import ZoomableLineChart from "../components/ZoomableLineChart";
 import ChartSearching from "../components/ChartSearching";
+import { useSelector } from "react-redux";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 function ChartTest() {
   const svgRef = useRef(null);
   const [data, setData] = useState(
     Array.from({ length: 500 }, () => Math.round(Math.random() * 100))
   );
+
+  const timestamp = useSelector((state) => state.timestamp.data);
+  const pvlist = useSelector((state) => state.searchingList.data);
+  const [dataList, setDataList] = useState({});
 
   const getAPI = async () => {
     const json = await (
@@ -22,17 +30,41 @@ function ChartTest() {
     getAPI();
   }, [data]);
 
+  useEffect(() => {
+    console.log("updated data!");
+    console.log(pvlist);
+    const urls = pvlist.map((item) => {
+      return `/retrieval/data/getData.json?pv=${item}&from=${timestamp[0]}&to=${timestamp[1]}`;
+    });
+
+    const fetchData = async () => {
+      try {
+        const responses = await Promise.all(urls.map((url) => axios.get(url)));
+        const data = [];
+        responses.forEach((response, index) => {
+          const key = pvlist[index].replace(/%3A/g, ":");
+          const x = response.data[0].data.map(
+            (item, idx) => response.data[0].data[idx].secs
+          );
+          const y = response.data[0].data.map(
+            (item, idx) => response.data[0].data[idx].val
+          );
+          data[key] = { x, y };
+        });
+        setDataList(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [timestamp, pvlist]);
+
   return (
     <React.Fragment>
       <h1>Zoomable Chart Test입니다.</h1>
       <h2>D3.js 연습</h2>
       <ChartSearching />
-      <ZoomableLineChart data={data} />
-      <button
-        onClick={() => setData([...data, Math.round(Math.random() * 100)])}
-      >
-        Add data
-      </button>
+      <ZoomableLineChart data={dataList} />
     </React.Fragment>
   );
 }

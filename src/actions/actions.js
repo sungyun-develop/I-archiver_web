@@ -50,7 +50,18 @@ export const setModalstate = (value) => ({
   payload: value,
 });
 
+//chart component
 export const updateAnnotContent = (data) => ({
   type: "UPDATE_AContent",
+  payload: data,
+});
+
+export const updateTimestamp = (data) => ({
+  type: "UPDATE_Timestamp",
+  payload: data,
+});
+
+export const updatePVlist = (data) => ({
+  type: "UPDATE_PVlist",
   payload: data,
 });

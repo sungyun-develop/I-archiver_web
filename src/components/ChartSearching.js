@@ -1,7 +1,8 @@
 import { useState } from "react";
 import styled from "./ChartSearching.module.css";
 import { useEffect } from "react";
-import axios from "axios";
+import { useDispatch } from "react-redux";
+import { updateTimestamp, updatePVlist } from "../actions/actions";
 
 function ChartSearching() {
   const [PVlist, setPVlist] = useState([]);
@@ -12,22 +13,17 @@ function ChartSearching() {
   const [lastItems, setLastItems] = useState([]);
   const [strTime, setStrTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    getList();
-  }, []);
-
-  const getList = async () => {
-    const json = await (await fetch("mgmt/bpl/getAllPVs")).json();
-    setPVlist(json);
+  const getList = async (name) => {
+    const json = await (await fetch(`mgmt/bpl/getAllPVs?pv=*${name}*`)).json();
+    return json;
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    getList();
-    const filteredList = PVlist.filter((idx) => idx.includes(searchingName));
-    console.log(filteredList);
-    setSelectedList(filteredList);
+    const result = await getList(searchingName);
+    setSelectedList(result);
     setSelectedItems([]);
   };
 
@@ -69,12 +65,21 @@ function ChartSearching() {
 
   const handleChangeStrTime = (event) => {
     console.log(event.target.value);
+    const time = event.target.value + ":00";
+    const formattedTime = encodeURIComponent(time) + ".000Z";
+    setStrTime(formattedTime);
   };
   const handleChangeEndTime = (event) => {
     console.log(event.target.value);
+    const time = event.target.value + ":00";
+    const formattedTime = encodeURIComponent(time) + ".000Z";
+    setEndTime(formattedTime);
   };
   const handleArchivedData = () => {
     console.log("request to archiver appliance");
+    const formattedLastList = lastList.map((item) => item.replace(/:/g, "%3A"));
+    dispatch(updatePVlist(formattedLastList));
+    dispatch(updateTimestamp([strTime, endTime]));
   };
 
   return (

@@ -11,6 +11,8 @@ import AnameReducer from "./component/AnameReducer";
 import AtimeReducer from "./component/AtimeReducer";
 import modalStateReducer2 from "./component/modalStateReducer2";
 import AnnotationContent from "./component/AnnotationContent";
+import TimestampReducer from "./component/TimestampReducer";
+import PVlistReducer from "./component/PVlistReducer";
 
 const persistConfig = {
   key: "root",
@@ -29,6 +31,8 @@ const rootReducer = combineReducers({
   alarmtime: AtimeReducer,
   modalstate: modalStateReducer2,
   annotContent: AnnotationContent,
+  timestamp: TimestampReducer,
+  searchingList: PVlistReducer,
 });
 
 export default persistReducer(persistConfig, rootReducer);
