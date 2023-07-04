@@ -13,6 +13,7 @@ function ChartTest() {
   const [data, setData] = useState(
     Array.from({ length: 500 }, () => Math.round(Math.random() * 100))
   );
+  const [working, setWorking] = useState(0);
 
   const timestamp = useSelector((state) => state.timestamp.data);
   const pvlist = useSelector((state) => state.searchingList.data);
@@ -51,7 +52,17 @@ function ChartTest() {
           );
           data[key] = { x, y };
         });
+        console.log("BBBBBBBBBBBBBBBBBBBBBBBB");
+        console.log(data);
+        console.log(typeof data);
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA");
         setDataList(data);
+        if (working == 0) {
+          setWorking(1);
+        } else {
+          setWorking(0);
+        }
+        console.log(working);
       } catch (error) {
         console.error(error);
       }
@@ -64,7 +75,7 @@ function ChartTest() {
       <h1>Zoomable Chart Test입니다.</h1>
       <h2>D3.js 연습</h2>
       <ChartSearching />
-      <ZoomableLineChart data={dataList} />
+      <ZoomableLineChart data={dataList} switching={working} />
     </React.Fragment>
   );
 }

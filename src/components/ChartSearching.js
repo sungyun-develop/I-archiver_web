@@ -65,15 +65,19 @@ function ChartSearching() {
 
   const handleChangeStrTime = (event) => {
     console.log(event.target.value);
-    const time = event.target.value + ":00";
-    const formattedTime = encodeURIComponent(time) + ".000Z";
-    setStrTime(formattedTime);
+    const time = event.target.value;
+    const formattedTime = new Date(time).toISOString();
+    const encodedTime = encodeURIComponent(formattedTime);
+    setStrTime(encodedTime);
   };
   const handleChangeEndTime = (event) => {
     console.log(event.target.value);
-    const time = event.target.value + ":00";
-    const formattedTime = encodeURIComponent(time) + ".000Z";
-    setEndTime(formattedTime);
+    const time = event.target.value;
+
+    const formattedTime = new Date(time).toISOString();
+    const encodedTime = encodeURIComponent(formattedTime);
+    console.log(encodedTime);
+    setEndTime(encodedTime);
   };
   const handleArchivedData = () => {
     console.log("request to archiver appliance");

@@ -12,6 +12,7 @@ import {
   axisRight,
   axisTop,
   scaleBand,
+  scaleTime,
 } from "d3";
 import * as d3Annotation from "d3-svg-annotation";
 import useResizeObserver from "./useResizeObserver";
@@ -23,10 +24,10 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setModalstate } from "../actions/actions";
 
-function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
+function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
-
+  console.log("code working on");
   const dimensions = useResizeObserver(wrapperRef);
   const [currentZoomState, setCurrentZoomState] = useState();
 
@@ -47,16 +48,24 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
 
   console.log(data);
   const dataLength = Object.keys(data).length;
+  console.log(dataLength);
   console.log("----");
   const [tempData, setTempData] = useState([]);
+  const [tempIdx, setTempIdx] = useState([]);
 
   useEffect(() => {
     if (dataLength !== 0) {
       setDataKeys(Object.keys(data));
       setDataValues(Object.values(data));
       setTempData(Object.values(data)[0].y);
+      const originalTimes = Object.values(data)[0].x;
+      const timeStamp = originalTimes.map((index) => {
+        const utcTime = new Date(index * 1000);
+        return utcTime;
+      });
+      setTempIdx(timeStamp);
     }
-  }, [dataLength]);
+  }, [dataLength, switching]);
 
   useEffect(() => {
     console.log("updatedContent!");
@@ -74,20 +83,26 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
     }
   }, [updatedContent]);
 
-  const sampleData = (data, sampleSize) => {
-    if (data.length > sampleSize) {
-      const step = Math.floor(data.length / sampleSize);
+  const samplingData = (data, sampleSize) => {
+    const size = data.time.length;
 
-      const sampleData = [];
+    if (size > sampleSize) {
+      const step = Math.floor(size / sampleSize);
+
+      const sampleX = [];
+      const sampleY = [];
       const sampleIndex = [];
-      for (let i = 0; i < data.length; i += step) {
-        sampleData.push(data[i]);
+
+      for (let i = 0; i < size; i += step) {
+        sampleX.push(data.time[i]);
+        sampleY.push(data.value[i]);
         sampleIndex.push(i);
       }
-      return { sampleData, sampleIndex };
+      return { sampleX, sampleY, sampleIndex };
     } else {
       return {
-        sampleData: data,
+        sampleX: data.time,
+        sampleY: data.value,
         sampleIndex: Array.from({ length: data.length }, (_, i) => i),
       };
     }
@@ -101,33 +116,87 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
     const { width, height } =
       dimensions || wrapperRef.current.getBoundingClientRect();
 
-    const sampledData = sampleData(tempData, 2000);
-    const sampledTempData = sampledData.sampleData;
-    const sampledDataIdx = sampledData.sampleIndex;
-    console.log("aasssss");
-    console.log("aaaaaaaaaaaaaaaaaaaa");
-    console.log(tempData);
-    console.log(tempData.length);
-    console.log(sampledTempData);
-    console.log(sampledDataIdx);
-    console.log("aaaaa");
-    console.log("aaaaaa");
+    const subData = { time: tempIdx, value: tempData };
+    let sampledData = samplingData(subData, 2000);
+
+    let sampledX = sampledData.sampleX;
+    let sampledTempData = sampledData.sampleY;
+    let sampledDataIdx = sampledData.sampleIndex;
 
     // scales + line generator
-    const xScale = scaleLinear()
-      .domain([0, sampledTempData.length - 1])
+    const xScale = scaleTime()
+      .domain([sampledX[0], sampledX[sampledX.length - 1]])
       .range([20, width - 20]);
 
+    //when it is worked at the zooming.
     if (currentZoomState) {
       const newXScale = currentZoomState.rescaleX(xScale);
-      console.log(newXScale.domain()[0]);
       setZoomPos(newXScale.domain()[0]);
       xScale.domain(newXScale.domain());
       const zoomedStr = Math.floor(newXScale.domain()[0]);
       const zoomedEnd = Math.floor(newXScale.domain()[1]);
-      console.log(zoomedStr);
-      console.log(zoomedEnd);
-      console.log("yyyyyyyyyyyyyyyyyy");
+
+      //get the sampling result whenever the zoom is acted.
+      let strPoint = tempIdx[0];
+      let endPoint = tempIdx[tempIdx.length - 1];
+      if (zoomedStr > tempIdx[0] || zoomedEnd < tempIdx[tempIdx.length - 1]) {
+        if (zoomedStr < tempIdx[0]) {
+          strPoint = 0;
+        } else {
+          strPoint = tempIdx.findIndex(function (time) {
+            return time === zoomedStr;
+          });
+          if (strPoint == -1) {
+            let closedIndex = -1;
+            let minDiff = Infinity;
+            for (let i = 0; i < tempIdx.length; i++) {
+              const diff = Math.abs(tempIdx[i] - zoomedStr);
+              if (diff < minDiff) {
+                minDiff = diff;
+                closedIndex = i;
+              }
+            }
+            strPoint = closedIndex;
+          }
+        }
+        if (zoomedEnd > tempIdx[tempIdx.length - 1]) {
+          endPoint = tempIdx.length - 1;
+        } else {
+          endPoint = tempIdx.findIndex(function (time) {
+            return time === zoomedEnd;
+          });
+          if (endPoint == -1) {
+            let closedIndex = -1;
+            let minDiff = Infinity;
+            for (let i = 0; i < tempIdx.length; i++) {
+              const diff = Math.abs(tempIdx[i] - zoomedEnd);
+              if (diff < minDiff) {
+                minDiff = diff;
+                closedIndex = i;
+              }
+            }
+            endPoint = closedIndex;
+          }
+        }
+
+        const strIdx = sampledDataIdx[strPoint];
+        const endIdx = sampledDataIdx[endPoint] + 1;
+
+        const newTempData = tempData.slice(strPoint, endPoint);
+        const newTempX = tempIdx.slice(strPoint, endPoint);
+        const subNewTemp = { time: newTempX, value: newTempData };
+
+        sampledData = samplingData(subNewTemp, 2000);
+        sampledX = sampledData.sampleX;
+        sampledTempData = sampledData.sampleY;
+        sampledDataIdx = sampledData.sampleIndex;
+        console.log("data 가우시안 계산");
+        console.log(newTempData.length);
+        const data_mean =
+          newTempData.reduce((sum, value) => sum + value, 0) /
+          newTempData.length;
+        console.log(data_mean);
+      }
     }
 
     const min_val = min(sampledTempData);
@@ -135,11 +204,11 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
     const delta = max_val - min_val;
 
     const yScale = scaleLinear()
-      .domain([min(sampledTempData) - delta, max(sampledTempData)])
+      .domain([min(sampledTempData) - delta / 4, max(sampledTempData)])
       .range([height - 70, 70]);
 
     const lineGenerator = line()
-      .x((d, index) => xScale(index))
+      .x((d, index) => xScale(sampledX[index]))
       .y((d) => yScale(d))
       .curve(curveCardinal);
 
@@ -161,7 +230,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       })
       .on("mousemove", (event) => {
         const mouseX = event.pageX - 70;
-        const mouseY = event.pageY - 585;
+        const mouseY = event.pageY - 1280;
 
         svg
           .select(".x-hover")
@@ -205,7 +274,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       .attr("r", 7)
       .attr("fill", (d) => (d === maxData || d === minData ? "red" : "yellow"))
       .attr("cx", (value, index) => {
-        return xScale(index);
+        return xScale(sampledX[index]);
       })
       .attr("cy", yScale)
       .on("mouseenter", (event, value) => {
@@ -221,7 +290,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
           .attr("class", "box")
           .attr("x", 0)
           .attr("y", yScale(value) - 21)
-          .attr("width", 60)
+          .attr("width", 110)
           .attr("height", 25)
           .attr("fill", "orange")
           .attr("opacity", 0.6);
@@ -232,8 +301,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
           .data([value])
           .join((enter) => enter.append("text").attr("y", yScale(value) - 4))
           .attr("class", "tooltip")
-          .text(value)
-          .attr("x", 29)
+          .text((d) => {
+            if (Math.abs(d) < 0.001 || Math.abs(d) > 10000) {
+              return d.toExponential(2);
+            } else {
+              return d.toFixed(2);
+            }
+          })
+          .attr("x", 45)
           .attr("text-anchor", "middle")
           .attr("font-size", "25px")
           .transition()
@@ -258,7 +333,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
       console.log(comment);
       if (comment == 1) {
         const mouseX = event.pageX - 70;
-        const mouseY = event.pageY - 585;
+        const mouseY = event.pageY - 1280;
         const dataIndex = Math.round(xScale.invert(mouseX));
         const dataX = xScale(dataIndex);
 
@@ -477,6 +552,9 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart" }) {
         </svg>
       </div>
       {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
+      <div>
+        <p>end</p>
+      </div>
     </React.Fragment>
   );
 }
