@@ -52,10 +52,7 @@ function ChartTest() {
           );
           data[key] = { x, y };
         });
-        console.log("BBBBBBBBBBBBBBBBBBBBBBBB");
-        console.log(data);
-        console.log(typeof data);
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
         setDataList(data);
         if (working == 0) {
           setWorking(1);
