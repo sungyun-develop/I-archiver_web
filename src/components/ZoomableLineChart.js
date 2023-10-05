@@ -13,6 +13,7 @@ import {
   axisTop,
   scaleBand,
   scaleTime,
+  minIndex,
 } from "d3";
 import * as d3Annotation from "d3-svg-annotation";
 import useResizeObserver from "./useResizeObserver";
@@ -23,6 +24,7 @@ import AnnotModal from "./annotation/AnnotModal";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setModalstate } from "../actions/actions";
+import { updateTimestamp } from "../actions/actions";
 
 function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const svgRef = useRef();
@@ -55,14 +57,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const [xDataSet, setxDataSet] = useState([]);
   const [yDataSet, setyDataSet] = useState([]);
 
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+
   useEffect(() => {
     if (dataLength !== 0) {
       setDataKeys(Object.keys(data));
       setDataValues(Object.values(data));
       setTempData(Object.values(data)[0].y);
-      console.log(Object.keys(data).length);
-      console.log(Object.keys(data));
-      console.log("}}}}}}}}}}}}}}}}}}}}}}}}}}");
       let xSet = [];
       let ySet = [];
       const dataSet = Object.values(data).map((idx) => {
@@ -135,6 +137,8 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     console.log(xDataSet.length);
     if (xDataSet.length > 0) {
       console.log("data input!");
+
+      //start spot
       const subData = { time: xDataSet[0], value: yDataSet[0] };
       let sampledData = samplingData(subData, 2000);
 
@@ -142,10 +146,25 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       let sampledTempData = sampledData.sampleY;
       let sampledDataIdx = sampledData.sampleIndex;
 
+      let sampledXSet = [];
+      let sampledYSet = [];
+      let sampledDataIdxSet = [];
+      let newsampledData;
+      xDataSet.forEach((xData, dataIdx) => {
+        const subData = { time: xData, value: yDataSet[dataIdx] };
+        newsampledData = samplingData(subData, 2000);
+        sampledXSet.push(newsampledData.sampleX);
+        sampledYSet.push(newsampledData.sampleY);
+        sampledDataIdxSet.push(newsampledData.sampleIndex);
+      });
+
       // scales + line generator
       const xScale = scaleTime()
-        .domain([sampledX[0], sampledX[sampledX.length - 1]])
+        .domain([sampledXSet[0][0], sampledXSet[0][sampledX.length - 1]])
         .range([20, width - 20]);
+
+      setStartTime(sampledXSet[0][0]);
+      setEndTime(sampledXSet[0][sampledXSet[0].length - 1]);
 
       //when it is worked at the zooming.
       if (currentZoomState) {
@@ -158,6 +177,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         //get the sampling result whenever the zoom is acted.
         let strPoint = xDataSet[0][0];
         let endPoint = xDataSet[0][xDataSet[0].length - 1];
+
         if (
           zoomedStr > xDataSet[0][0] ||
           zoomedEnd < xDataSet[0][xDataSet[0].length - 1]
@@ -204,6 +224,22 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           const strIdx = sampledDataIdx[strPoint];
           const endIdx = sampledDataIdx[endPoint] + 1;
 
+          //multi data sampling 조절 적용
+          sampledXSet = [];
+          sampledYSet = [];
+          sampledDataIdxSet = [];
+          yDataSet.forEach((ySet, Idx) => {
+            console.log(`${Idx} data 처리 중`);
+            let slicedData = ySet.slice(strPoint, endPoint);
+            let slicedIdx = xDataSet[Idx].slice(strPoint, endPoint);
+            let newDataSet = { time: slicedIdx, value: slicedData };
+            //sample data 생성
+            const sampledRes = samplingData(newDataSet, 2000);
+            sampledXSet.push(sampledRes.sampleX);
+            sampledYSet.push(sampledRes.sampleY);
+            sampledDataIdxSet.push(sampledRes.sampleIndex);
+          });
+
           const newTempData = tempData.slice(strPoint, endPoint);
           const newTempX = xDataSet[0].slice(strPoint, endPoint);
           const subNewTemp = { time: newTempX, value: newTempData };
@@ -221,18 +257,86 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         }
       }
 
-      const min_val = min(sampledTempData);
-      const max_val = max(sampledTempData);
-      const delta = max_val - min_val;
+      //multi-data layer browsing
+      const colors = [
+        "red",
+        "blue",
+        "black",
+        "green",
+        "violet",
+        "grey",
+        "aqua",
+      ];
 
-      const yScale = scaleLinear()
-        .domain([min(sampledTempData) - delta / 4, max(sampledTempData)])
-        .range([height - 70, 70]);
+      svg.selectAll(".axis-title").remove();
+      sampledXSet.forEach((xData, dataIdx) => {
+        console.log("multi layer data browsing");
+        console.log(dataIdx);
+        let sampledx = xData;
+        let sampledy = sampledYSet[dataIdx];
+        let sampledIdx = sampledDataIdxSet[dataIdx];
 
-      const lineGenerator = line()
-        .x((d, index) => xScale(sampledX[index]))
-        .y((d) => yScale(d))
-        .curve(curveCardinal);
+        const minVal = min(sampledy);
+        const maxVal = max(sampledy);
+        const peakTopeak = maxVal - minVal;
+        const numIdx = sampledXSet.length;
+        console.log(`총 ${numIdx}중에`);
+        console.log(`지금 ${dataIdx}`);
+        console.log(maxVal);
+        console.log(minVal);
+        //peak to peak and idx 정보 적용 data browsing shifting
+        //domain 영역 offset 값 필수
+        let yScale;
+        if (numIdx > 1) {
+          console.log("multi-data!");
+          yScale = scaleLinear()
+            .domain([
+              maxVal +
+                (numIdx - dataIdx) * (maxVal / (numIdx * numIdx) + peakTopeak) -
+                dataIdx * (maxVal / numIdx),
+              minVal - dataIdx * (maxVal / numIdx + peakTopeak),
+            ])
+            .range([50, height - 50]);
+        } else {
+          console.log("single data!");
+          yScale = scaleLinear()
+            .domain([maxVal, minVal])
+            .range([50, height - 50]);
+        }
+
+        const lineGenerator = line()
+          .x((d, index) => xScale(sampledx[index]))
+          .y((d) => yScale(d))
+          .curve(curveCardinal);
+        console.log(colors[dataIdx]);
+        svgContent
+          .selectAll(`.dataLines-${dataIdx}`)
+          .data([sampledy])
+          .join("path")
+          .attr("class", `dataLines-${dataIdx}`)
+          .attr("stroke", colors[dataIdx])
+          .attr("fill", "none")
+          .attr("d", lineGenerator);
+
+        const yAxis = axisLeft(yScale);
+
+        svg
+          .select(`.y-axis-${dataIdx}`)
+          .attr("transform", `translate(-${dataIdx * 75},0)`)
+          .style("font-size", "12px")
+          .call(yAxis);
+        svg
+          .select(`.y-axis-${dataIdx}`)
+          .append("text")
+          .attr("class", "axis-title")
+          .attr("transform", `translate(-35, ${height / 2})rotate(-90)`)
+          .attr("text-anchor", "middle")
+          .style("fill", `${colors[dataIdx]}`)
+          .style("font-weight", "bold")
+          .style("font-size", "13px")
+          .text(`${dataKeys[dataIdx]}`);
+      });
+
       // render the line
       svg
         .on("mouseenter", () => {
@@ -248,6 +352,12 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             .attr("stroke", "black")
             .attr("stroke-width", 1)
             .attr("pointer-events", "none");
+
+          svg
+            .append("text")
+            .attr("class", "time-tooltip")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "20px");
         })
         .on("mousemove", (event) => {
           const mouseX = event.pageX - 70;
@@ -268,97 +378,20 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             .attr("x2", mouseX)
             .attr("y2", height)
             .attr("opacity", 1);
+
+          const timeVal = xScale.invert(mouseX);
+          const formattedTimeVal = timeVal.toLocaleString();
+          svg
+            .select(".time-tooltip")
+            .attr("x", mouseX)
+            .attr("y", 1020)
+            .text(formattedTimeVal);
         })
         .on("mouseleave", () => {
           svg.select(".y-hover").remove();
           svg.select(".x-hover").remove();
+          svg.select(".time-tooltip").remove();
         });
-
-      svgContent
-        .selectAll(".myLine")
-        .data([sampledTempData])
-        .join("path")
-        .attr("class", "myLine")
-        .attr("stroke", "blue")
-        .attr("fill", "none")
-        .attr("d", lineGenerator);
-
-      const maxData = max(sampledTempData);
-      const minData = min(sampledTempData);
-
-      svgContent
-        .selectAll(".myDot")
-        .data(sampledTempData)
-        .join("circle")
-        .attr("class", "myDot")
-        .attr("stroke", "black")
-        .attr("r", 7)
-        .attr("fill", (d) =>
-          d === maxData || d === minData ? "red" : "yellow"
-        )
-        .attr("cx", (value, index) => {
-          return xScale(sampledX[index]);
-        })
-        .attr("cy", (value) => {
-          if (Math.abs(maxData - minData) > 1) {
-            if (value < 1) {
-              return -9999;
-            } else {
-              return yScale(value);
-            }
-          } else {
-            return yScale(value);
-          }
-        })
-        .on("mouseenter", (event, value) => {
-          const index = svgContent
-            .selectAll(".myDot")
-            .nodes()
-            .indexOf(event.target);
-
-          svgContent
-            .selectAll(".box")
-            .data([value])
-            .join("rect")
-            .attr("class", "box")
-            .attr("x", 0)
-            .attr("y", yScale(value) - 21)
-            .attr("width", 110)
-            .attr("height", 25)
-            .attr("fill", "orange")
-            .attr("opacity", 0.6);
-
-          svgContent.select(`.myDot:nth-child(${index + 2})`).attr("r", 12);
-          svgContent
-            .selectAll(".tooltip")
-            .data([value])
-            .join((enter) => enter.append("text").attr("y", yScale(value) - 4))
-            .attr("class", "tooltip")
-            .text((d) => {
-              if (Math.abs(d) < 0.001 || Math.abs(d) > 10000) {
-                return d.toExponential(2);
-              } else {
-                return d.toFixed(2);
-              }
-            })
-            .attr("x", 45)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "25px")
-            .transition()
-            .attr("y", yScale(value))
-            .attr("opacity", 1);
-        })
-        .on("mouseleave", (event, value) => {
-          const index = svgContent
-            .selectAll(".myDot")
-            .nodes()
-            .indexOf(event.target);
-          svgContent.select(".tooltip").remove();
-          svgContent.select(`.myDot:nth-child(${index + 2})`).attr("r", 7);
-          svgContent.select(".box").remove();
-        })
-        .transition()
-        .attr("height", (value) => 150 - yScale(value));
 
       //tools
 
@@ -469,9 +502,6 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         .attr("transform", `translate(0, ${height})`)
         .call(xAxis);
 
-      const yAxis = axisLeft(yScale);
-      svg.select(".y-axis").call(yAxis);
-
       // zoom
       const zoomBehavior = zoom()
         .scaleExtent([0.9, 20])
@@ -560,6 +590,34 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     }
   };
 
+  const addPastData = () => {
+    console.log("call the data");
+    console.log(startTime);
+    console.log(endTime);
+    const delta = (endTime - startTime) / 4;
+    const adjustedStartTime = new Date(
+      startTime.getTime() - delta
+    ).toISOString();
+    const encodedStartTime = encodeURIComponent(adjustedStartTime);
+
+    const adjustedEndTime = endTime.toISOString();
+    const encodedEndTime = encodeURIComponent(adjustedEndTime);
+    dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
+  };
+
+  const addRearData = () => {
+    console.log("call the data");
+    console.log(startTime);
+    console.log(endTime);
+    const delta = (endTime - startTime) / 4;
+    const adjustedStartTime = startTime.toISOString();
+    const encodedStartTime = encodeURIComponent(adjustedStartTime);
+    const adjustedEndTime = new Date(endTime.getTime() + delta).toISOString();
+    const encodedEndTime = encodeURIComponent(adjustedEndTime);
+
+    dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
+  };
+
   return (
     <React.Fragment>
       <div ref={wrapperRef} className={styled.chartWrap}>
@@ -576,6 +634,12 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           <button type="button" onClick={addComment}>
             add Comment
           </button>
+          <button type="button" onClick={addPastData}>
+            add past
+          </button>
+          <button type="button" onClick={addRearData}>
+            add rear
+          </button>
         </div>
         <svg ref={svgRef} className={styled.chart}>
           <defs>
@@ -585,7 +649,10 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           </defs>
           <g className="content" clipPath={`url(#${id})`}></g>
           <g className="x-axis" />
-          <g className="y-axis" />
+
+          {yDataSet.map((data, index) => (
+            <g className={`y-axis-${index}`} />
+          ))}
         </svg>
       </div>
       {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}

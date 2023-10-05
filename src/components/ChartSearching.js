@@ -70,15 +70,15 @@ function ChartSearching() {
     const encodedTime = encodeURIComponent(formattedTime);
     setStrTime(encodedTime);
   };
+
   const handleChangeEndTime = (event) => {
     console.log(event.target.value);
     const time = event.target.value;
-
     const formattedTime = new Date(time).toISOString();
     const encodedTime = encodeURIComponent(formattedTime);
-    console.log(encodedTime);
     setEndTime(encodedTime);
   };
+
   const handleArchivedData = () => {
     console.log("request to archiver appliance");
     const formattedLastList = lastList.map((item) => item.replace(/:/g, "%3A"));
@@ -97,15 +97,9 @@ function ChartSearching() {
         />
         <input type="submit" value="검색" required />
       </form>
-      <div>
-        <div>
-          <label>시작 시간</label>
-          <input type="datetime-local" onChange={handleChangeStrTime}></input>
-        </div>
-        <div>
-          <label>종료 시간</label>
-          <input type="datetime-local" onChange={handleChangeEndTime}></input>
-        </div>
+      <div className={styled.timeselect}>
+        <input type="datetime-local" onChange={handleChangeStrTime}></input>
+        <input type="datetime-local" onChange={handleChangeEndTime}></input>
       </div>
       <div className={styled.searchingBoxBody}>
         <ul className={styled.searchingResultBox}>
