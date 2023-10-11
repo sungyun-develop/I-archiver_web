@@ -29,6 +29,10 @@ import { updateTimestamp } from "../actions/actions";
 function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
+  const svgStac0 = useRef();
+  const svgStac1 = useRef();
+  const svgStac2 = useRef();
+  const wrapperStac = useRef();
   console.log("code working on");
   const dimensions = useResizeObserver(wrapperRef);
   const [currentZoomState, setCurrentZoomState] = useState();
@@ -48,10 +52,8 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const [dataKeys, setDataKeys] = useState([]);
   const [dataValues, setDataValues] = useState([]);
 
-  console.log(data);
   const dataLength = Object.keys(data).length;
-  console.log(dataLength);
-  console.log("----");
+
   const [tempData, setTempData] = useState([]);
 
   const [xDataSet, setxDataSet] = useState([]);
@@ -59,6 +61,12 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
 
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
+
+  //for stability stactics
+  const [stabMean, setStabMean] = useState([]);
+  const [stabStandard, setStabStandard] = useState([]);
+  const [stabDiff, setStabDiff] = useState([]);
+  const [stabData, setStabData] = useState([]);
 
   useEffect(() => {
     if (dataLength !== 0) {
@@ -129,12 +137,12 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   // will be called initially and on every data change
   useEffect(() => {
     const svg = select(svgRef.current);
+    svgRef.current.style.marginLeft = `${xDataSet.length * 100}`;
 
     const svgContent = svg.select(".content");
     const { width, height } =
       dimensions || wrapperRef.current.getBoundingClientRect();
 
-    console.log(xDataSet.length);
     if (xDataSet.length > 0) {
       console.log("data input!");
 
@@ -228,8 +236,11 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           sampledXSet = [];
           sampledYSet = [];
           sampledDataIdxSet = [];
+          let meanArr = [];
+          let standardArr = [];
+          let resData = [];
+          let diff = [];
           yDataSet.forEach((ySet, Idx) => {
-            console.log(`${Idx} data 처리 중`);
             let slicedData = ySet.slice(strPoint, endPoint);
             let slicedIdx = xDataSet[Idx].slice(strPoint, endPoint);
             let newDataSet = { time: slicedIdx, value: slicedData };
@@ -238,7 +249,53 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             sampledXSet.push(sampledRes.sampleX);
             sampledYSet.push(sampledRes.sampleY);
             sampledDataIdxSet.push(sampledRes.sampleIndex);
+
+            //통계처리를 위한 결과 filtering
+            console.log("data filtering....");
+            const meanVal =
+              slicedData.reduce((sum, value) => sum + value, 0) /
+              slicedData.length;
+
+            const filteredData = slicedData.filter((data) => data >= meanVal);
+            const newmeanVal =
+              filteredData.reduce((sum, value) => sum + value, 0) /
+              filteredData.length;
+            const squaredDiff = filteredData.map((val) =>
+              Math.pow(val - newmeanVal, 2)
+            );
+            const variance =
+              squaredDiff.reduce((acc, val) => acc + val, 0) /
+              squaredDiff.length;
+            const standardDev = Math.sqrt(variance);
+            const threshold = standardDev * 2; // 정규분포 95% 신뢰도
+            const resFilter = filteredData.filter(
+              (data) => Math.abs(data - newmeanVal) <= threshold
+            );
+            //data export to stactics
+            //평균
+            const resMean =
+              resFilter.reduce((sum, value) => sum + value, 0) /
+              resFilter.length;
+            //편차제곱
+            const resSquaredDiff = resFilter.map((val) =>
+              Math.pow(val - resMean, 2)
+            );
+            //분산
+            const resVariance =
+              resSquaredDiff.reduce((acc, val) => acc + val, 0) /
+              resSquaredDiff.length;
+            //표준편차
+            const resStandard = Math.sqrt(resVariance);
+            const resMax = max(resFilter);
+            const resMin = min(resFilter);
+            const resDiffavg = ((resMax - resMin) / resMean) * 100;
+            meanArr.push(resMean);
+            standardArr.push(resStandard);
+            diff.push(resDiffavg);
           });
+          console.log(meanArr);
+          console.log(standardArr);
+          console.log(diff);
 
           const newTempData = tempData.slice(strPoint, endPoint);
           const newTempX = xDataSet[0].slice(strPoint, endPoint);
@@ -271,7 +328,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg.selectAll(".axis-title").remove();
       sampledXSet.forEach((xData, dataIdx) => {
         console.log("multi layer data browsing");
-        console.log(dataIdx);
+
         let sampledx = xData;
         let sampledy = sampledYSet[dataIdx];
         let sampledIdx = sampledDataIdxSet[dataIdx];
@@ -280,10 +337,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         const maxVal = max(sampledy);
         const peakTopeak = maxVal - minVal;
         const numIdx = sampledXSet.length;
-        console.log(`총 ${numIdx}중에`);
-        console.log(`지금 ${dataIdx}`);
-        console.log(maxVal);
-        console.log(minVal);
+
         //peak to peak and idx 정보 적용 data browsing shifting
         //domain 영역 offset 값 필수
         let yScale;
@@ -308,7 +362,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           .x((d, index) => xScale(sampledx[index]))
           .y((d) => yScale(d))
           .curve(curveCardinal);
-        console.log(colors[dataIdx]);
+
         svgContent
           .selectAll(`.dataLines-${dataIdx}`)
           .data([sampledy])
@@ -322,22 +376,24 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
 
         svg
           .select(`.y-axis-${dataIdx}`)
-          .attr("transform", `translate(-${dataIdx * 75},0)`)
-          .style("font-size", "12px")
+          .attr("transform", `translate(-${dataIdx * 90},0)`)
+          .style("font-size", "14px")
           .call(yAxis);
         svg
           .select(`.y-axis-${dataIdx}`)
           .append("text")
           .attr("class", "axis-title")
-          .attr("transform", `translate(-35, ${height / 2})rotate(-90)`)
+          .attr("transform", `translate(-65, ${height / 2})rotate(-90)`)
           .attr("text-anchor", "middle")
           .style("fill", `${colors[dataIdx]}`)
           .style("font-weight", "bold")
-          .style("font-size", "13px")
+          .style("font-size", "16px")
           .text(`${dataKeys[dataIdx]}`);
       });
 
       // render the line
+      console.log(height);
+
       svg
         .on("mouseenter", () => {
           svg
@@ -360,8 +416,13 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             .attr("font-size", "20px");
         })
         .on("mousemove", (event) => {
-          const mouseX = event.pageX - 70;
-          const mouseY = event.pageY - 1280;
+          const mouseX =
+            event.pageX -
+            xDataSet.length * 320 +
+            (xDataSet.length - 1) * 220 -
+            (width / event.pageX) * 90;
+
+          const mouseY = event.pageY - 1252;
 
           svg
             .select(".x-hover")
@@ -384,7 +445,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           svg
             .select(".time-tooltip")
             .attr("x", mouseX)
-            .attr("y", 1020)
+            .attr("y", 1200)
             .text(formattedTimeVal);
         })
         .on("mouseleave", () => {
@@ -618,9 +679,19 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
   };
 
+  const resStactics = () => {
+    console.log("안정도 결과");
+    const svg0 = select(svgStac0.current);
+    const svg0Content = svg0.select(".content");
+    const svg1 = select(svgStac1.current);
+    const svg1Content = svg1.select(".content");
+    const svg2 = select(svgStac2.current);
+    const svg2Content = svg2.select(".content");
+  };
+
   return (
     <React.Fragment>
-      <div ref={wrapperRef} className={styled.chartWrap}>
+      <div className={styled.chartRegion}>
         <div>
           <button type="button" onClick={changeBack}>
             show grid
@@ -641,23 +712,34 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             add rear
           </button>
         </div>
-        <svg ref={svgRef} className={styled.chart}>
-          <defs>
-            <clipPath id={id}>
-              <rect x="0" y="0" width="100%" height="100%" />
-            </clipPath>
-          </defs>
-          <g className="content" clipPath={`url(#${id})`}></g>
-          <g className="x-axis" />
+        <div ref={wrapperRef} className={styled.chartWrap}>
+          <svg ref={svgRef} className={styled.chart}>
+            <defs>
+              <clipPath id={id}>
+                <rect x="0" y="0" width="100%  " height="100%" />
+              </clipPath>
+            </defs>
+            <g className="content" clipPath={`url(#${id})`}></g>
+            <g className="x-axis" />
 
-          {yDataSet.map((data, index) => (
-            <g className={`y-axis-${index}`} />
-          ))}
-        </svg>
-      </div>
-      {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
-      <div>
-        <p>end</p>
+            {yDataSet.map((data, index) => (
+              <g className={`y-axis-${index}`} />
+            ))}
+          </svg>
+        </div>
+        {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
+        <div>
+          <p>end</p>
+          <h2>안정도 통계</h2>
+          <button type="button" onClick={resStactics}>
+            결과 확인
+          </button>
+        </div>
+        <div ref={wrapperStac}>
+          <svg ref={svgStac0}></svg>
+          <svg ref={svgStac1}></svg>
+          <svg ref={svgStac2}></svg>
+        </div>
       </div>
     </React.Fragment>
   );
