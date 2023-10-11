@@ -137,7 +137,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   // will be called initially and on every data change
   useEffect(() => {
     const svg = select(svgRef.current);
-    svgRef.current.style.marginLeft = `${xDataSet.length * 100}`;
+    svgRef.current.style.marginLeft = `${xDataSet.length * 100}`; // y-axis & data set 수 연동, 마진 생성
 
     const svgContent = svg.select(".content");
     const { width, height } =
@@ -256,7 +256,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
               slicedData.reduce((sum, value) => sum + value, 0) /
               slicedData.length;
 
-            const filteredData = slicedData.filter((data) => data >= meanVal);
+            const filteredData = slicedData.filter((data) => data >= meanVal/2); // (평균/2) data 제거 
             const newmeanVal =
               filteredData.reduce((sum, value) => sum + value, 0) /
               filteredData.length;
@@ -292,10 +292,12 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             meanArr.push(resMean);
             standardArr.push(resStandard);
             diff.push(resDiffavg);
+            resData.push(resFilter);
           });
-          console.log(meanArr);
-          console.log(standardArr);
-          console.log(diff);
+          setStabMean(meanArr);
+          setStabStandard(standardArr);
+          setStabDiff(diff);
+          setStabData(resData);
 
           const newTempData = tempData.slice(strPoint, endPoint);
           const newTempX = xDataSet[0].slice(strPoint, endPoint);
@@ -680,6 +682,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   };
 
   const resStactics = () => {
+  
     console.log("안정도 결과");
     const svg0 = select(svgStac0.current);
     const svg0Content = svg0.select(".content");
@@ -687,6 +690,31 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     const svg1Content = svg1.select(".content");
     const svg2 = select(svgStac2.current);
     const svg2Content = svg2.select(".content");
+
+  
+
+    console.log(svg0Content);
+    console.log(dataKeys);
+    console.log(stabMean);
+
+    const xScale = scaleBand()
+    .domain(dataKeys)
+    .range([0, 100]).padding(0.1);
+    const yScale = scaleLinear().domain([0, max(stabMean)+10]).range([0,100]);
+
+    
+    svg0
+    .selectAll(".meanResult")
+    .data(stabMean)
+    .enter()
+    .append("rect")
+    .attr("class", "meanResult")
+    .attr("x", (d,i) => xScale(dataKeys[i]))
+    .attr("y", d=> 100 - yScale(d))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d=> yScale(d))
+
+
   };
 
   return (
@@ -736,10 +764,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           </button>
         </div>
         <div ref={wrapperStac}>
-          <svg ref={svgStac0}></svg>
-          <svg ref={svgStac1}></svg>
+          <svg ref={svgStac0}>
+            
+          </svg>
+          <svg ref={svgStac1}>
+          </svg>
           <svg ref={svgStac2}></svg>
         </div>
+        <h1>test interface...!!</h1>
       </div>
     </React.Fragment>
   );
