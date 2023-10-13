@@ -88,66 +88,75 @@ function ChartSearching() {
 
   return (
     <div>
-      <form className={styled.searchingForm} onSubmit={handleFormSubmit}>
-        <input
-          type="text"
-          placeholder="PV 이름을 검색해주세요"
-          required
-          onChange={handleChangeName}
-        />
-        <input type="submit" value="검색" required />
-      </form>
+      <div className={styled.wrapSearchingForm}>
+        <form className={styled.searchingForm} onSubmit={handleFormSubmit}>
+          <input
+            type="text"
+            placeholder="PV 이름을 검색해주세요"
+            required
+            onChange={handleChangeName}
+          />
+          <input type="submit" value="검색" required />
+        </form>
+      </div>
       <div className={styled.timeselect}>
         <input type="datetime-local" onChange={handleChangeStrTime}></input>
         <input type="datetime-local" onChange={handleChangeEndTime}></input>
       </div>
-      <div className={styled.searchingBoxBody}>
-        <ul className={styled.searchingResultBox}>
-          {selectedList.map((item, index) => {
-            if (index < 20) {
-              return (
-                <li
-                  key={index}
-                  onClick={(event) => handleItemClick(item, event)}
-                  className={
-                    selectedItems.includes(item) ? styled.selectedItem : ""
-                  }
-                >
-                  {item}
-                </li>
-              );
-            }
-            return null;
-          })}
-        </ul>
-        <div className={styled.arrowBox}>
-          <div
-            className={styled.rightArrow}
-            onClick={handleSelectedPVClick}
-            type="button"
-          ></div>
-          <div
-            className={styled.leftArrow}
-            onClick={handleDeletePV}
-            type="button"
-          ></div>
+      <div className={styled.PVsBox}>
+        <div className={styled.searchingBoxBody}>
+          <ul className={styled.searchingResultBox}>
+            {selectedList.map((item, index) => {
+              if (index < 20) {
+                return (
+                  <li
+                    key={index}
+                    onClick={(event) => handleItemClick(item, event)}
+                    className={
+                      selectedItems.includes(item) ? styled.selectedItem : ""
+                    }
+                  >
+                    {item}
+                  </li>
+                );
+              }
+              return null;
+            })}
+          </ul>
+          <div className={styled.wrapArrowBox}>
+            <div className={styled.arrowBox}>
+              <div
+                className={styled.rightArrow}
+                onClick={handleSelectedPVClick}
+                type="button"
+              ></div>
+              <div
+                className={styled.leftArrow}
+                onClick={handleDeletePV}
+                type="button"
+              ></div>
+            </div>
+          </div>
+
+          <ul className={styled.selectedResult}>
+            {lastList.map((item, index) => (
+              <li
+                key={index}
+                onClick={(event) => handlelastItemClick(item, event)}
+                className={lastItems.includes(item) ? styled.selectedItem : ""}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className={styled.selectedResult}>
-          {lastList.map((item, index) => (
-            <li
-              key={index}
-              onClick={(event) => handlelastItemClick(item, event)}
-              className={lastItems.includes(item) ? styled.selectedItem : ""}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-        <div>
-          <button type="button" onClick={handleArchivedData}>
-            데이터 검색
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleArchivedData}
+          className={styled.requestBtn}
+        >
+          데이터 검색
+        </button>
       </div>
     </div>
   );

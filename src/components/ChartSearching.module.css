@@ -1,15 +1,21 @@
+.wrapSearchingForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .searchingForm {
   display: grid;
   grid-template-columns: 5fr 1fr;
   grid-column-gap: 5px;
   height: 60px;
-  width: 50%;
+  width: 30%;
   margin-left: 10px;
   margin-bottom: 30px;
 }
 
 .searchingForm > input:first-child {
-  font-size: 15px;
+  font-size: 50px;
   border: none;
   border-bottom: 2px solid black;
   border-top-left-radius: 5px;
@@ -34,7 +40,8 @@
 }
 
 .searchingForm > input:last-child {
-  font-size: 15px;
+  font-size: 50px;
+  font-weight: bold;
   background-color: #e1ffe1;
   border: none;
   border-radius: 2px;
@@ -54,14 +61,23 @@
   border: 2px solid darkblue;
 }
 
-.searchingBoxBody {
+.PVsBox {
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.searchingBoxBody {
+  display: grid;
+  grid-template-columns: 3fr 1fr 3fr;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
 .searchingResultBox {
   border: 3px solid black;
-  width: 300px;
+  width: 400px;
   height: 500px;
   overflow: auto;
   padding-left: 0%;
@@ -83,6 +99,13 @@
 .selectedItem {
   background-color: #dcebff;
   font-weight: bold;
+}
+
+.wrapArrowBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
 }
 
 .arrowBox {
@@ -137,11 +160,9 @@
 
 .selectedResult {
   border: 3px solid black;
-  width: 300px;
+  width: 400px;
   height: 500px;
   overflow: auto;
-  margin-left: 160px;
-  padding-left: 0%;
   text-align: center;
 }
 
@@ -152,6 +173,21 @@
   padding: 5px;
 }
 
+.requestBtn {
+  margin-left: 30px;
+  width: 250px;
+  height: 150px;
+}
+
 .timeselect {
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeselect input {
+  width: 500px;
+  font-size: 35px;
+  margin: 0 10px;
+  padding: 5px;
 }

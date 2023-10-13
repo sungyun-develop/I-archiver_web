@@ -14,6 +14,7 @@ import {
   scaleBand,
   scaleTime,
   minIndex,
+  svg,
 } from "d3";
 import * as d3Annotation from "d3-svg-annotation";
 import useResizeObserver from "./useResizeObserver";
@@ -32,7 +33,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const svgStac0 = useRef();
   const svgStac1 = useRef();
   const svgStac2 = useRef();
-  const wrapperStac = useRef();
+
   console.log("code working on");
   const dimensions = useResizeObserver(wrapperRef);
   const [currentZoomState, setCurrentZoomState] = useState();
@@ -61,6 +62,16 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
 
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
+
+  const [colors, setColors] = useState([
+    "red",
+    "blue",
+    "black",
+    "green",
+    "violet",
+    "grey",
+    "aqua",
+  ]);
 
   //for stability stactics
   const [stabMean, setStabMean] = useState([]);
@@ -137,6 +148,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   // will be called initially and on every data change
   useEffect(() => {
     const svg = select(svgRef.current);
+
     svgRef.current.style.marginLeft = `${xDataSet.length * 100}`; // y-axis & data set 수 연동, 마진 생성
 
     const svgContent = svg.select(".content");
@@ -256,7 +268,13 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
               slicedData.reduce((sum, value) => sum + value, 0) /
               slicedData.length;
 
-            const filteredData = slicedData.filter((data) => data >= meanVal/2); // (평균/2) data 제거 
+            console.log("data 검사 중~~~~~~~~~~~~~~~~~~~~~~~~");
+            console.log(meanVal);
+            const middleVal = (max(slicedData) - min(slicedData)) / 2;
+
+            const filteredData = slicedData.filter(
+              (data) => data >= middleVal / 2
+            ); // (평균/2) data 제거
             const newmeanVal =
               filteredData.reduce((sum, value) => sum + value, 0) /
               filteredData.length;
@@ -288,6 +306,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             const resStandard = Math.sqrt(resVariance);
             const resMax = max(resFilter);
             const resMin = min(resFilter);
+
             const resDiffavg = ((resMax - resMin) / resMean) * 100;
             meanArr.push(resMean);
             standardArr.push(resStandard);
@@ -298,34 +317,10 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           setStabStandard(standardArr);
           setStabDiff(diff);
           setStabData(resData);
-
-          const newTempData = tempData.slice(strPoint, endPoint);
-          const newTempX = xDataSet[0].slice(strPoint, endPoint);
-          const subNewTemp = { time: newTempX, value: newTempData };
-
-          sampledData = samplingData(subNewTemp, 2000);
-          sampledX = sampledData.sampleX;
-          sampledTempData = sampledData.sampleY;
-          sampledDataIdx = sampledData.sampleIndex;
-          console.log("data 가우시안 계산");
-          console.log(newTempData.length);
-          const data_mean =
-            newTempData.reduce((sum, value) => sum + value, 0) /
-            newTempData.length;
-          console.log(data_mean);
         }
       }
 
       //multi-data layer browsing
-      const colors = [
-        "red",
-        "blue",
-        "black",
-        "green",
-        "violet",
-        "grey",
-        "aqua",
-      ];
 
       svg.selectAll(".axis-title").remove();
       sampledXSet.forEach((xData, dataIdx) => {
@@ -681,41 +676,167 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
   };
 
-  const resStactics = () => {
-  
-    console.log("안정도 결과");
-    const svg0 = select(svgStac0.current);
-    const svg0Content = svg0.select(".content");
-    const svg1 = select(svgStac1.current);
-    const svg1Content = svg1.select(".content");
-    const svg2 = select(svgStac2.current);
-    const svg2Content = svg2.select(".content");
+  //act on result button
+  useEffect(() => {
+    if (svgStac0.current) {
+      const svg0 = select(svgStac0.current);
+      const svg1 = select(svgStac1.current);
+      const svg2 = select(svgStac2.current);
 
-  
+      const {
+        x: s0X,
+        y: s0Y,
+        width: s0Width,
+        height: s0Height,
+      } = svgStac0.current.getBoundingClientRect();
 
-    console.log(svg0Content);
-    console.log(dataKeys);
-    console.log(stabMean);
+      const {
+        x: s1X,
+        y: s1Y,
+        width: s1Width,
+        height: s1Height,
+      } = svgStac1.current.getBoundingClientRect();
 
-    const xScale = scaleBand()
-    .domain(dataKeys)
-    .range([0, 100]).padding(0.1);
-    const yScale = scaleLinear().domain([0, max(stabMean)+10]).range([0,100]);
+      const {
+        x: s2X,
+        y: s2Y,
+        width: s2Width,
+        height: s2Height,
+      } = svgStac2.current.getBoundingClientRect();
 
-    
-    svg0
-    .selectAll(".meanResult")
-    .data(stabMean)
-    .enter()
-    .append("rect")
-    .attr("class", "meanResult")
-    .attr("x", (d,i) => xScale(dataKeys[i]))
-    .attr("y", d=> 100 - yScale(d))
-    .attr('width', xScale.bandwidth())
-    .attr('height', d=> yScale(d))
+      const xScale = scaleBand()
+        .domain(dataKeys)
+        .range([0, s0Width])
+        .padding(0.3);
+      const y0Scale = scaleLinear()
+        .domain([0, max(stabMean) + max(stabMean) / 10])
+        .range([s0Height, 0]);
 
+      const y1Scale = scaleLinear()
+        .domain([0, max(stabStandard) + max(stabStandard) / 10])
+        .range([s1Height, 0]);
 
-  };
+      const y2Scale = scaleLinear()
+        .domain([0, max(stabDiff) + max(stabDiff) / 10])
+        .range([s2Height, 0]);
+
+      const xAxis = axisBottom(xScale).ticks(dataKeys.length);
+      const y0Axis = axisLeft(y0Scale);
+      const y1Axis = axisLeft(y1Scale);
+      const y2Axis = axisLeft(y2Scale);
+
+      //sv0 (mean chart) 생성
+      svg0.selectAll(".meanResult").remove();
+      svg0.selectAll(".tooltip").remove();
+      svg0
+        .selectAll(".meanResult")
+        .data(stabMean)
+        .enter()
+        .append("rect")
+        .attr("class", "meanResult")
+        .attr("fill", (d, i) => colors[i])
+        .attr("x", (d, i) => xScale(dataKeys[i]))
+        .attr("y", (d) => y0Scale(d))
+        .attr("width", xScale.bandwidth())
+        .attr("height", (d) => s0Height - y0Scale(d));
+      svg0
+        .selectAll(".tooltip")
+        .data(stabMean)
+        .join("text")
+        .attr("class", "tooltip")
+        .text((d, i) => stabMean[i].toFixed(1))
+        .attr("x", (d, i) => xScale(dataKeys[i]) + xScale.bandwidth() / 2)
+        .attr("y", (d) => y0Scale(d) - 2)
+        .attr("font-size", "22px")
+        .style("text-anchor", "middle");
+      svg0
+        .select(".x-axis-st0")
+        .attr("transform", `translate(0, ${s0Height})`)
+        .attr("font-size", "10px")
+        .attr("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .call(xAxis);
+      svg0
+        .select(".y-axis-st0")
+        .attr("transform", "translate(0,0)")
+        .attr("font-weight", "bold")
+        .call(y0Axis);
+
+      //sv1 (standard deviation chart) 생성
+      svg1.selectAll(".meanResult").remove();
+      svg1.selectAll(".tooltip").remove();
+      svg1
+        .selectAll(".meanResult")
+        .data(stabStandard)
+        .enter()
+        .append("rect")
+        .attr("class", "meanResult")
+        .attr("fill", (d, i) => colors[i])
+        .attr("x", (d, i) => xScale(dataKeys[i]))
+        .attr("y", (d) => y1Scale(d))
+        .attr("width", xScale.bandwidth())
+        .attr("height", (d) => s1Height - y1Scale(d));
+      svg1
+        .selectAll(".tooltip")
+        .data(stabStandard)
+        .join("text")
+        .attr("class", "tooltip")
+        .text((d, i) => stabStandard[i].toFixed(1))
+        .attr("x", (d, i) => xScale(dataKeys[i]) + xScale.bandwidth() / 2)
+        .attr("y", (d) => y1Scale(d) - 2)
+        .attr("font-size", "22px")
+        .style("text-anchor", "middle");
+      svg1
+        .select(".x-axis-st1")
+        .attr("transform", `translate(0, ${s1Height})`)
+        .attr("font-size", "10px")
+        .attr("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .call(xAxis);
+      svg1
+        .select(".y-axis-st1")
+        .attr("transform", "translate(0,0)")
+        .attr("font-weight", "bold")
+        .call(y1Axis);
+
+      //sv2 (standard deviation chart) 생성
+      svg2.selectAll(".meanResult").remove();
+      svg2.selectAll(".tooltip").remove();
+      svg2
+        .selectAll(".meanResult")
+        .data(stabDiff)
+        .enter()
+        .append("rect")
+        .attr("class", "meanResult")
+        .attr("fill", (d, i) => colors[i])
+        .attr("x", (d, i) => xScale(dataKeys[i]))
+        .attr("y", (d) => y2Scale(d))
+        .attr("width", xScale.bandwidth())
+        .attr("height", (d) => s2Height - y2Scale(d));
+      svg2
+        .selectAll(".tooltip")
+        .data(stabDiff)
+        .join("text")
+        .attr("class", "tooltip")
+        .text((d, i) => stabDiff[i].toFixed(1))
+        .attr("x", (d, i) => xScale(dataKeys[i]) + xScale.bandwidth() / 2)
+        .attr("y", (d) => y2Scale(d) - 2)
+        .attr("font-size", "22px")
+        .style("text-anchor", "middle");
+      svg2
+        .select(".x-axis-st2")
+        .attr("transform", `translate(0, ${s2Height})`)
+        .attr("font-size", "10px")
+        .attr("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .call(xAxis);
+      svg2
+        .select(".y-axis-st2")
+        .attr("transform", "translate(0,0)")
+        .attr("font-weight", "bold")
+        .call(y2Axis);
+    }
+  }, [stabData, dimensions]);
 
   return (
     <React.Fragment>
@@ -759,17 +880,33 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         <div>
           <p>end</p>
           <h2>안정도 통계</h2>
-          <button type="button" onClick={resStactics}>
-            결과 확인
-          </button>
         </div>
-        <div ref={wrapperStac}>
-          <svg ref={svgStac0}>
-            
-          </svg>
-          <svg ref={svgStac1}>
-          </svg>
-          <svg ref={svgStac2}></svg>
+        <div className={styled.stacticsWrap}>
+          <div className={styled.stac0}>
+            <h3>평균값</h3>
+            <svg ref={svgStac0} className={styled.stac0_chart}>
+              <g className="x-axis-st0" />
+              <g className="y-axis-st0" />
+            </svg>
+          </div>
+          <div className={styled.stac1}>
+            <h3>표준편차</h3>
+            <svg ref={svgStac1} className={styled.stac1_chart}>
+              <g className="x-axis-st1" />
+              <g className="y-axis-st1" />
+            </svg>
+          </div>
+          <div className={styled.stac2}>
+            <h3>평균에 대한 변동성 (max-min)/avg</h3>
+            <svg ref={svgStac2} className={styled.stac2_chart}>
+              <g className="x-axis-st2" />
+              <g className="y-axis-st2" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3>데이터 별 가우시안 분포</h3>
+          <svg></svg>
         </div>
         <h1>test interface...!!</h1>
       </div>
