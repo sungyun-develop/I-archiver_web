@@ -15,6 +15,8 @@ import {
   scaleTime,
   minIndex,
   svg,
+  bin,
+  range,
 } from "d3";
 import * as d3Annotation from "d3-svg-annotation";
 import useResizeObserver from "./useResizeObserver";
@@ -27,12 +29,18 @@ import { useDispatch } from "react-redux";
 import { setModalstate } from "../actions/actions";
 import { updateTimestamp } from "../actions/actions";
 
+//insert to img
+import gridImg from "../img/grid_layout.png";
+import annotImg from "../img/annot.png";
+import rightArrow from "../img/right_arrow.png";
+
 function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const svgStac0 = useRef();
   const svgStac1 = useRef();
   const svgStac2 = useRef();
+  const svgGausian = useRef();
 
   console.log("code working on");
   const dimensions = useResizeObserver(wrapperRef);
@@ -74,10 +82,15 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   ]);
 
   //for stability stactics
+  const [stabStrTime, setStabStrTime] = useState("");
+  const [stabEndTime, setStabEndTime] = useState("");
   const [stabMean, setStabMean] = useState([]);
   const [stabStandard, setStabStandard] = useState([]);
   const [stabDiff, setStabDiff] = useState([]);
   const [stabData, setStabData] = useState([]);
+
+  //visible svg
+  const [svgVisible, setSvgVisible] = useState(false);
 
   useEffect(() => {
     if (dataLength !== 0) {
@@ -264,12 +277,10 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
 
             //통계처리를 위한 결과 filtering
             console.log("data filtering....");
-            const meanVal =
-              slicedData.reduce((sum, value) => sum + value, 0) /
-              slicedData.length;
+            setStabStrTime(slicedIdx[0]);
+            setStabEndTime(slicedIdx[-1]);
 
-            console.log("data 검사 중~~~~~~~~~~~~~~~~~~~~~~~~");
-            console.log(meanVal);
+            //중간값을 기준으로 절반이하의 값은 제거
             const middleVal = (max(slicedData) - min(slicedData)) / 2;
 
             const filteredData = slicedData.filter(
@@ -389,7 +400,6 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       });
 
       // render the line
-      console.log(height);
 
       svg
         .on("mouseenter", () => {
@@ -676,6 +686,78 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
   };
 
+  const drawAllGausian = () => {
+    console.log("draw All Gausian datas");
+    setSvgVisible(true);
+    let mean = stabMean;
+    let stdDeviation = stabStandard;
+    let rowData = stabData;
+    let { x, y, width, height } = svgGausian.current.getBoundingClientRect();
+
+    const svg = select(svgGausian.current);
+
+    //각 histogram refresh
+    svg.selectAll("[class^='histograms-']").remove();
+    //function
+    rowData.forEach((data, idx) => {
+      const maxd = max(data);
+      const mind = min(data);
+
+      const thresholdArr = range(
+        mind,
+        maxd + (maxd - mind) / 10,
+        (maxd - mind) / 10
+      );
+
+      const histo = bin()
+        .value((d) => d)
+        .domain([mind - (maxd - mind) / 9, maxd + (maxd - mind) / 9])
+        .thresholds(thresholdArr);
+
+      const bins = histo(data);
+      console.log(width);
+      console.log(rowData.length);
+      console.log(bins);
+      const size = width / rowData.length;
+      console.log(size);
+      const xScale = scaleLinear()
+        .domain([mind, maxd])
+        .range([idx * size + size / 20, (idx + 1) * size - size / 20]);
+      const yScale = scaleLinear()
+        .domain([0, max(bins, (d) => d.length)])
+        .range([height, 20]);
+
+      const xAxis = axisBottom(xScale);
+      const yAxis = axisLeft(yScale);
+
+      svg
+        .selectAll(`.histograms-${idx}`)
+        .data(bins)
+        .enter()
+        .append("rect")
+        .attr("class", `histograms-${idx}`)
+        .attr("x", (d) => xScale(d.x0))
+        .attr("y", (d) => yScale(d.length))
+        .attr("width", (d) => (xScale(d.x1) - xScale(d.x0)) / 1.5)
+        .attr("height", (d) => height - yScale(d.length))
+        .attr("fill", "steelblue");
+
+      svg
+        .select(`.x-axis-${idx}`)
+        .attr("transform", `translate(0, ${height})`)
+        .attr("font-size", `${size / 31}`)
+        .attr("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .call(xAxis);
+
+      svg
+        .select(`.y-axis-${idx}`)
+        .attr("transform", `translate(${idx * size},0)`)
+        .style("font-size", `${size / 31}`)
+        .call(yAxis);
+    });
+  };
+
   //act on result button
   useEffect(() => {
     if (svgStac0.current) {
@@ -752,13 +834,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg0
         .select(".x-axis-st0")
         .attr("transform", `translate(0, ${s0Height})`)
-        .attr("font-size", "10px")
+        .attr("font-size", `${s0Width / (stabMean.length * 10)}`)
         .attr("font-weight", "bold")
         .style("text-anchor", "middle")
         .call(xAxis);
       svg0
         .select(".y-axis-st0")
         .attr("transform", "translate(0,0)")
+        .attr("font-size", `${s0Width / (stabMean.length * 18)}`)
         .attr("font-weight", "bold")
         .call(y0Axis);
 
@@ -789,13 +872,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg1
         .select(".x-axis-st1")
         .attr("transform", `translate(0, ${s1Height})`)
-        .attr("font-size", "10px")
+        .attr("font-size", `${s1Width / (stabMean.length * 10)}`)
         .attr("font-weight", "bold")
         .style("text-anchor", "middle")
         .call(xAxis);
       svg1
         .select(".y-axis-st1")
         .attr("transform", "translate(0,0)")
+        .attr("font-size", `${s1Width / (stabMean.length * 18)}`)
         .attr("font-weight", "bold")
         .call(y1Axis);
 
@@ -826,13 +910,14 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg2
         .select(".x-axis-st2")
         .attr("transform", `translate(0, ${s2Height})`)
-        .attr("font-size", "10px")
+        .attr("font-size", `${s2Width / (stabMean.length * 10)}`)
         .attr("font-weight", "bold")
         .style("text-anchor", "middle")
         .call(xAxis);
       svg2
         .select(".y-axis-st2")
         .attr("transform", "translate(0,0)")
+        .attr("font-size", `${s2Width / (stabMean.length * 18)}`)
         .attr("font-weight", "bold")
         .call(y2Axis);
     }
@@ -841,9 +926,9 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   return (
     <React.Fragment>
       <div className={styled.chartRegion}>
-        <div>
+        <div className={styled.chartTools}>
           <button type="button" onClick={changeBack}>
-            show grid
+            <img src={gridImg} alt="grid 생성" className={styled.imgs} />
           </button>
           <button type="button" onClick={drawHorizonLine}>
             draw line
@@ -852,7 +937,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             Period
           </button>
           <button type="button" onClick={addComment}>
-            add Comment
+            <img src={annotImg} className={styled.imgs} />
           </button>
           <button type="button" onClick={addPastData}>
             add past
@@ -878,35 +963,60 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         </div>
         {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
         <div>
-          <p>end</p>
-          <h2>안정도 통계</h2>
+          <h1>안정도 통계</h1>
+          <div>
+            <h2>표본 데이터 정보</h2>
+            <div>
+              <p>timestamp</p>
+            </div>
+          </div>
         </div>
         <div className={styled.stacticsWrap}>
           <div className={styled.stac0}>
-            <h3>평균값</h3>
+            <h2>평균값</h2>
             <svg ref={svgStac0} className={styled.stac0_chart}>
               <g className="x-axis-st0" />
               <g className="y-axis-st0" />
             </svg>
           </div>
           <div className={styled.stac1}>
-            <h3>표준편차</h3>
+            <h2>표준편차</h2>
             <svg ref={svgStac1} className={styled.stac1_chart}>
               <g className="x-axis-st1" />
               <g className="y-axis-st1" />
             </svg>
           </div>
           <div className={styled.stac2}>
-            <h3>평균에 대한 변동성 (max-min)/avg</h3>
+            <h2>평균에 대한 변동성 (max-min)/avg</h2>
             <svg ref={svgStac2} className={styled.stac2_chart}>
               <g className="x-axis-st2" />
               <g className="y-axis-st2" />
             </svg>
           </div>
         </div>
-        <div>
-          <h3>데이터 별 가우시안 분포</h3>
-          <svg></svg>
+        <div className={styled.gausianBoxWrap}>
+          <div className={styled.drawGausianBox}>
+            <h2>데이터 별 히스토그램 확인(화살표 클릭!)</h2>
+            <button
+              type="button"
+              onClick={drawAllGausian}
+              className={styled.rightarrowBox}
+            >
+              <img
+                src={rightArrow}
+                alt="right arrow"
+                className={styled.rightArrow}
+              ></img>
+            </button>
+          </div>
+          <svg ref={svgGausian} className={styled.allGausian}>
+            {yDataSet.map((data, index) => (
+              <g className={`x-axis-${index}`} />
+            ))}
+            {yDataSet.map((data, index) => (
+              <g className={`y-axis-${index}`} />
+            ))}
+          </svg>
         </div>
         <h1>test interface...!!</h1>
       </div>

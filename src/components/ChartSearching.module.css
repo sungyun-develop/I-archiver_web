@@ -61,10 +61,19 @@
   border: 2px solid darkblue;
 }
 
+.HiddenBox {
+  opacity: 0;
+  height: 10px;
+  visibility: hidden;
+  transition: opacity 2s ease-in-out, height 2s ease-in-out;
+}
+
 .PVsBox {
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 1;
+  transition: opacity 2s ease-in-out;
 }
 
 .searchingBoxBody {
@@ -173,10 +182,40 @@
   padding: 5px;
 }
 
+.BtnBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 50px;
+}
+
 .requestBtn {
   margin-left: 30px;
   width: 250px;
-  height: 150px;
+  height: 120px;
+  text-align: center;
+  font-weight: bolder;
+  color: ghostwhite;
+  font-size: 30px;
+  background-color: #46beff;
+  border-radius: 5%;
+  box-shadow: 1px 1px 2px 2px rgb(0, 0, 0);
+}
+
+.requestBtn:hover {
+  cursor: pointer;
+  text-decoration: underline;
+  background: linear-gradient(45deg, #0078ff, #46beff);
+}
+
+.closeBtnBox {
+  border: none;
+  background-color: white;
+  margin-bottom: 30px;
+}
+
+.closeBtn {
+  height: 90px;
 }
 
 .timeselect {
@@ -190,4 +229,9 @@
   font-size: 35px;
   margin: 0 10px;
   padding: 5px;
+}
+
+.timeselect input:hover {
+  background-color: #acf3ff;
+  cursor: pointer;
 }

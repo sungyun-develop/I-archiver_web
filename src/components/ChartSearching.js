@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateTimestamp, updatePVlist } from "../actions/actions";
 
+import imgLeftArrow from "../img/left_arrow.png";
+
 function ChartSearching() {
   const [PVlist, setPVlist] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
@@ -13,6 +15,8 @@ function ChartSearching() {
   const [lastItems, setLastItems] = useState([]);
   const [strTime, setStrTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
+
   const dispatch = useDispatch();
 
   const getList = async (name) => {
@@ -22,6 +26,7 @@ function ChartSearching() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setIsVisible(true);
     const result = await getList(searchingName);
     setSelectedList(result);
     setSelectedItems([]);
@@ -80,30 +85,46 @@ function ChartSearching() {
   };
 
   const handleArchivedData = () => {
+    setIsVisible(false);
     console.log("request to archiver appliance");
     const formattedLastList = lastList.map((item) => item.replace(/:/g, "%3A"));
     dispatch(updatePVlist(formattedLastList));
     dispatch(updateTimestamp([strTime, endTime]));
   };
 
+  const closedSearchingBox = () => {
+    setIsVisible(false);
+  };
+
   return (
     <div>
       <div className={styled.wrapSearchingForm}>
-        <form className={styled.searchingForm} onSubmit={handleFormSubmit}>
-          <input
-            type="text"
-            placeholder="PV 이름을 검색해주세요"
-            required
-            onChange={handleChangeName}
-          />
-          <input type="submit" value="검색" required />
+        <form onSubmit={handleFormSubmit}>
+          <div className={styled.searchingForm}>
+            <input
+              type="text"
+              placeholder="PV 이름을 검색해주세요"
+              required
+              onChange={handleChangeName}
+            />
+            <input type="submit" value="검색" required />
+          </div>
+          <div className={styled.timeselect}>
+            <input
+              type="datetime-local"
+              required
+              onChange={handleChangeStrTime}
+            ></input>
+            <input
+              type="datetime-local"
+              required
+              onChange={handleChangeEndTime}
+            ></input>
+          </div>
         </form>
       </div>
-      <div className={styled.timeselect}>
-        <input type="datetime-local" onChange={handleChangeStrTime}></input>
-        <input type="datetime-local" onChange={handleChangeEndTime}></input>
-      </div>
-      <div className={styled.PVsBox}>
+
+      <div className={isVisible == true ? styled.PVsBox : styled.HiddenBox}>
         <div className={styled.searchingBoxBody}>
           <ul className={styled.searchingResultBox}>
             {selectedList.map((item, index) => {
@@ -150,13 +171,26 @@ function ChartSearching() {
             ))}
           </ul>
         </div>
-        <button
-          type="button"
-          onClick={handleArchivedData}
-          className={styled.requestBtn}
-        >
-          데이터 검색
-        </button>
+        <div className={styled.BtnBox}>
+          <button
+            type="button"
+            onClick={closedSearchingBox}
+            className={styled.closeBtnBox}
+          >
+            <img
+              src={imgLeftArrow}
+              alt="left arrow"
+              className={styled.closeBtn}
+            ></img>
+          </button>
+          <button
+            type="button"
+            onClick={handleArchivedData}
+            className={styled.requestBtn}
+          >
+            데이터 검색
+          </button>
+        </div>
       </div>
     </div>
   );

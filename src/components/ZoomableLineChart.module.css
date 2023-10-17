@@ -6,11 +6,39 @@
   padding-right: 10%;
 }
 
+.chartTools {
+  display: flex;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.chartTools > button {
+  margin-left: 10px;
+  height: 50px;
+  background-color: white;
+  border: none;
+}
+
+.chartTools > button:hover {
+  background-color: #e0ebff;
+  border-radius: 5%;
+}
+
+.imgs {
+  height: 45px;
+}
+
+.imgs:hover {
+  cursor: pointer;
+}
+
 .chartWrap {
-  width: 90%;
+  width: 110%;
   overflow-x: auto;
   white-space: nowrap;
-  padding-bottom: 50px;
+  padding-bottom: 100px;
 }
 
 .chart {
@@ -33,7 +61,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 20px;
+  margin: 0 30px;
 }
 
 .stac0_chart {
@@ -47,7 +75,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 20px;
+  margin: 0 30px;
 }
 
 .stac1_chart {
@@ -61,10 +89,42 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 20px;
+  margin: 0 30px;
 }
 
 .stac2_chart {
   height: 100%;
   width: 100%;
+}
+
+.gausianBoxWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.drawGausianBox {
+  display: flex;
+  align-items: center;
+}
+
+.rightarrowBox {
+  border: none;
+  background: none;
+  transform: translateX(0);
+  transition: transform 0.5s ease;
+}
+
+.rightarrowBox:hover {
+  transform: translateX(10px);
+}
+
+.rightArrow {
+  height: 40px;
+}
+
+.allGausian {
+  width: 70%;
+  height: 400px;
 }
