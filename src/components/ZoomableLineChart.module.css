@@ -128,3 +128,84 @@
   width: 70%;
   height: 400px;
 }
+
+.StabMotherBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.StabElement {
+  display: flex;
+}
+
+.StabTimeBox {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 3px solid saddlebrown;
+  border-radius: 10px;
+}
+
+.StabTimeBox > p:first-child {
+  font-size: 25px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+.StabTimeSubBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid saddlebrown;
+  height: 100%;
+}
+
+.StabTimeSubBox > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.StabTimeSubBox > div:first-child {
+  padding-right: 10px;
+  border-right: 2px solid saddlebrown;
+  margin-left: 10px;
+}
+
+.StabTimeSubBox > div:last-child {
+  padding-left: 10px;
+  margin-right: 10px;
+}
+
+.StabCntBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid saddlebrown;
+  border-radius: 10px;
+  margin-left: 20px;
+}
+
+.StabCntBox > p {
+  font-size: 25px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+.StabCntBox > ul {
+  padding: 10px;
+}
+
+.StabCntBox > ul > li {
+  list-style: none;
+  padding-left: 0px;
+  font-size: 20px;
+}

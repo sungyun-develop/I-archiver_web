@@ -82,12 +82,13 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
   ]);
 
   //for stability stactics
-  const [stabStrTime, setStabStrTime] = useState("");
-  const [stabEndTime, setStabEndTime] = useState("");
+  const [stabStrTime, setStabStrTime] = useState(0);
+  const [stabEndTime, setStabEndTime] = useState(0);
   const [stabMean, setStabMean] = useState([]);
   const [stabStandard, setStabStandard] = useState([]);
   const [stabDiff, setStabDiff] = useState([]);
   const [stabData, setStabData] = useState([]);
+  const [stablens, setStabLens] = useState(0);
 
   //visible svg
   const [svgVisible, setSvgVisible] = useState(false);
@@ -97,6 +98,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       setDataKeys(Object.keys(data));
       setDataValues(Object.values(data));
       setTempData(Object.values(data)[0].y);
+
       let xSet = [];
       let ySet = [];
       const dataSet = Object.values(data).map((idx) => {
@@ -215,47 +217,8 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           zoomedStr > xDataSet[0][0] ||
           zoomedEnd < xDataSet[0][xDataSet[0].length - 1]
         ) {
-          if (zoomedStr < xDataSet[0][0]) {
-            strPoint = 0;
-          } else {
-            strPoint = xDataSet[0].findIndex(function (time) {
-              return time === zoomedStr;
-            });
-            if (strPoint == -1) {
-              let closedIndex = -1;
-              let minDiff = Infinity;
-              for (let i = 0; i < xDataSet[0].length; i++) {
-                const diff = Math.abs(xDataSet[0][i] - zoomedStr);
-                if (diff < minDiff) {
-                  minDiff = diff;
-                  closedIndex = i;
-                }
-              }
-              strPoint = closedIndex;
-            }
-          }
-          if (zoomedEnd > xDataSet[0][xDataSet[0].length - 1]) {
-            endPoint = xDataSet[0].length - 1;
-          } else {
-            endPoint = xDataSet[0].findIndex(function (time) {
-              return time === zoomedEnd;
-            });
-            if (endPoint == -1) {
-              let closedIndex = -1;
-              let minDiff = Infinity;
-              for (let i = 0; i < xDataSet[0].length; i++) {
-                const diff = Math.abs(xDataSet[0][i] - zoomedEnd);
-                if (diff < minDiff) {
-                  minDiff = diff;
-                  closedIndex = i;
-                }
-              }
-              endPoint = closedIndex;
-            }
-          }
-
-          const strIdx = sampledDataIdx[strPoint];
-          const endIdx = sampledDataIdx[endPoint] + 1;
+          //data가 없으면 루프 안돌도록!
+          console.log("data input ok!");
 
           //multi data sampling 조절 적용
           sampledXSet = [];
@@ -265,20 +228,71 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           let standardArr = [];
           let resData = [];
           let diff = [];
+          let lens = [];
           yDataSet.forEach((ySet, Idx) => {
+            console.log("data확인중!!!!!!!!!");
+            console.log(`${Idx}번째 데이터`);
+
+            if (zoomedStr < xDataSet[Idx][0]) {
+              strPoint = 0;
+            } else {
+              strPoint = xDataSet[Idx].findIndex(function (time) {
+                return time === zoomedStr;
+              });
+              if (strPoint == -1) {
+                let closedIndex = -1;
+                let minDiff = Infinity;
+                for (let i = 0; i < xDataSet[Idx].length; i++) {
+                  const diff = Math.abs(xDataSet[Idx][i] - zoomedStr);
+                  if (diff < minDiff) {
+                    minDiff = diff;
+                    closedIndex = i;
+                  }
+                }
+                strPoint = closedIndex;
+              }
+            }
+            if (zoomedEnd > xDataSet[Idx][xDataSet[Idx].length - 1]) {
+              endPoint = xDataSet[Idx].length - 1;
+            } else {
+              endPoint = xDataSet[Idx].findIndex(function (time) {
+                return time === zoomedEnd;
+              });
+              if (endPoint == -1) {
+                let closedIndex = -1;
+                let minDiff = Infinity;
+                for (let i = 0; i < xDataSet[Idx].length; i++) {
+                  const diff = Math.abs(xDataSet[Idx][i] - zoomedEnd);
+                  if (diff < minDiff) {
+                    minDiff = diff;
+                    closedIndex = i;
+                  }
+                }
+                endPoint = closedIndex;
+              }
+            }
             let slicedData = ySet.slice(strPoint, endPoint);
             let slicedIdx = xDataSet[Idx].slice(strPoint, endPoint);
             let newDataSet = { time: slicedIdx, value: slicedData };
             //sample data 생성
-            const sampledRes = samplingData(newDataSet, 2000);
+            //그리는 data가 늘어날때마다 sampling 수 조절
+            const sampledRes = samplingData(
+              newDataSet,
+              2000 - yDataSet.length * 150
+            );
             sampledXSet.push(sampledRes.sampleX);
             sampledYSet.push(sampledRes.sampleY);
             sampledDataIdxSet.push(sampledRes.sampleIndex);
 
             //통계처리를 위한 결과 filtering
             console.log("data filtering....");
+
+            console.log(slicedIdx[0]);
+
             setStabStrTime(slicedIdx[0]);
-            setStabEndTime(slicedIdx[-1]);
+            setStabEndTime(slicedIdx[slicedIdx.length - 1]);
+            console.log(stabStrTime);
+            console.log(stabEndTime);
 
             //중간값을 기준으로 절반이하의 값은 제거
             const middleVal = (max(slicedData) - min(slicedData)) / 2;
@@ -323,11 +337,13 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             standardArr.push(resStandard);
             diff.push(resDiffavg);
             resData.push(resFilter);
+            lens.push(resFilter.length);
           });
           setStabMean(meanArr);
           setStabStandard(standardArr);
           setStabDiff(diff);
           setStabData(resData);
+          setStabLens(lens);
         }
       }
 
@@ -354,15 +370,17 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           yScale = scaleLinear()
             .domain([
               maxVal +
-                (numIdx - dataIdx) * (maxVal / (numIdx * numIdx) + peakTopeak) -
-                dataIdx * (maxVal / numIdx),
-              minVal - dataIdx * (maxVal / numIdx + peakTopeak),
+                (numIdx - dataIdx) * (maxVal * 0.5) +
+                (numIdx - 1 - dataIdx) * (peakTopeak * 0.5),
+              minVal -
+                (dataIdx + 1) * (minVal * 0.7) -
+                dataIdx * peakTopeak * 1.5,
             ])
             .range([50, height - 50]);
         } else {
           console.log("single data!");
           yScale = scaleLinear()
-            .domain([maxVal, minVal])
+            .domain([maxVal + maxVal * 0.1, minVal - minVal * 0.1])
             .range([50, height - 50]);
         }
 
@@ -686,6 +704,10 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     dispatch(updateTimestamp([encodedStartTime, encodedEndTime]));
   };
 
+  useEffect(() => {
+    drawAllGausian();
+  }, [dimensions]);
+
   const drawAllGausian = () => {
     console.log("draw All Gausian datas");
     setSvgVisible(true);
@@ -715,9 +737,6 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         .thresholds(thresholdArr);
 
       const bins = histo(data);
-      console.log(width);
-      console.log(rowData.length);
-      console.log(bins);
       const size = width / rowData.length;
       console.log(size);
       const xScale = scaleLinear()
@@ -962,12 +981,34 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           </svg>
         </div>
         {modalState && <AnnotModal isOpen={isOpen} pickedItem={pickedAnnot} />}
-        <div>
+        <div className={styled.StabMotherBox}>
           <h1>안정도 통계</h1>
+          <h2>표본 데이터 정보</h2>
           <div>
-            <h2>표본 데이터 정보</h2>
-            <div>
-              <p>timestamp</p>
+            <div className={styled.StabElement}>
+              <div className={styled.StabTimeBox}>
+                <p>표본 timestamp</p>
+                <div className={styled.StabTimeSubBox}>
+                  <div>
+                    <p>시작 시간</p>
+                    <p>{stabStrTime.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p>마지막 시간</p>
+                    <p>{stabEndTime.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+              <div className={styled.StabCntBox}>
+                <p>표본 갯수</p>
+                <ul>
+                  {dataKeys.map((data, idx) => (
+                    <li>
+                      {data} : {stablens[idx]}개
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
