@@ -33,7 +33,7 @@ function ChartTest() {
 
   useEffect(() => {
     console.log("updated data!");
-    console.log(pvlist);
+    console.log(timestamp);
     const urls = pvlist.map((item) => {
       return `/retrieval/data/getData.json?pv=${item}&from=${timestamp[0]}&to=${timestamp[1]}`;
     });
@@ -42,6 +42,7 @@ function ChartTest() {
       try {
         const responses = await Promise.all(urls.map((url) => axios.get(url)));
         const data = [];
+        console.log(responses);
         responses.forEach((response, index) => {
           const key = pvlist[index].replace(/%3A/g, ":");
           const x = response.data[0].data.map(

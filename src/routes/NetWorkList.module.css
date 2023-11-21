@@ -1,0 +1,12 @@
+.ipBox {
+  display: flex;
+  flex-direction: row;
+}
+
+.newBox {
+  margin-right: 40px;
+}
+
+.newBoxList {
+  display: flex;
+}

@@ -167,6 +167,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
     svgRef.current.style.marginLeft = `${xDataSet.length * 100}`; // y-axis & data set 수 연동, 마진 생성
 
     const svgContent = svg.select(".content");
+    svgContent.selectAll("*").remove();
     const { width, height } =
       dimensions || wrapperRef.current.getBoundingClientRect();
 
@@ -403,7 +404,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
         svg
           .select(`.y-axis-${dataIdx}`)
           .attr("transform", `translate(-${dataIdx * 90},0)`)
-          .style("font-size", "14px")
+          .style("font-size", `${width / 200}`)
           .call(yAxis);
         svg
           .select(`.y-axis-${dataIdx}`)
@@ -438,16 +439,22 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             .append("text")
             .attr("class", "time-tooltip")
             .attr("text-anchor", "middle")
-            .attr("font-size", "20px");
+            .attr("font-size", `${width / 120}`);
+
+          yDataSet.forEach((data, idx) => {
+            svg
+              .append("text")
+              .attr("class", `value-tooltip-${idx}`)
+              .attr("text-anchor", "middle")
+              .attr("font-weight", "bold")
+              .style("fill", "gray")
+              .attr("font-size", `${width / 130}`);
+          });
         })
         .on("mousemove", (event) => {
-          const mouseX =
-            event.pageX -
-            xDataSet.length * 320 +
-            (xDataSet.length - 1) * 220 -
-            (width / event.pageX) * 90;
-
-          const mouseY = event.pageY - 1252;
+          const container = svg.node().getBoundingClientRect();
+          const mouseX = event.pageX - container.left;
+          const mouseY = event.pageY - height * 0.675;
 
           svg
             .select(".x-hover")
@@ -466,6 +473,32 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
             .attr("opacity", 1);
 
           const timeVal = xScale.invert(mouseX);
+
+          sampledXSet.forEach((data, idx) => {
+            let closestVal = data[0];
+            let closestDiff = Math.abs(timeVal - data[0]);
+            for (let i = 0; i < data.length; i++) {
+              let diffVal = Math.abs(timeVal - data[i]);
+              if (diffVal < closestDiff) {
+                closestVal = data[i];
+                closestDiff = diffVal;
+              }
+            }
+            let idxInfo = data.indexOf(closestVal);
+            let yVal = sampledYSet[idx][idxInfo].toFixed(2);
+            let peakTopeak = max(sampledYSet[idx]) - min(sampledYSet[idx]);
+
+            svg
+              .select(`.value-tooltip-${idx}`)
+              .attr("x", mouseX - 100)
+              .attr(
+                "y",
+                ((height * 0.9) / sampledXSet.length) *
+                  (sampledXSet.length - idx)
+              )
+              .text(yVal);
+          });
+
           const formattedTimeVal = timeVal.toLocaleString();
           svg
             .select(".time-tooltip")
@@ -477,6 +510,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
           svg.select(".y-hover").remove();
           svg.select(".x-hover").remove();
           svg.select(".time-tooltip").remove();
+          svg.selectAll("[class^='value-tooltip-']").remove();
         });
 
       //tools
@@ -484,8 +518,9 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg.on("click", (event, value) => {
         console.log(comment);
         if (comment == 1) {
-          const mouseX = event.pageX - 70;
-          const mouseY = event.pageY - 1280;
+          const container = svg.node().getBoundingClientRect();
+          const mouseX = event.pageX - container.left;
+          const mouseY = event.pageY - height * 0.675;
           const dataIndex = Math.round(xScale.invert(mouseX));
           const dataX = xScale(dataIndex);
 
@@ -586,6 +621,7 @@ function ZoomableLineChart({ data, id = "myZoomableLineChart", switching }) {
       svg
         .select(".x-axis")
         .attr("transform", `translate(0, ${height})`)
+        .style("font-size", `${width / 200}`)
         .call(xAxis);
 
       // zoom

@@ -10,6 +10,10 @@ import NoeventTable from "./components/noeventtable/NoeventTable";
 import AlarmMon from "./routes/AlarmMon";
 import Manual from "./routes/Manual";
 import ChartTest from "./routes/ChartTest";
+import NetWorkList from "./routes/NetWorkList";
+import CreateIp from "./components/ipinfo/CreateIp";
+import DetailInfo from "./components/ipinfo/DetailInfo";
+import UpdateIp from "./components/ipinfo/UpdateIp";
 
 function App() {
   return (
@@ -36,6 +40,9 @@ function App() {
         <Link to="/chartTest">
           <h1> Go to zoomable chart</h1>
         </Link>
+        <Link to="/networklist">
+          <h1>Go to Network 목록</h1>
+        </Link>
       </div>
       <Routes>
         <Route path="/alarm/*" element={<AlarmMon />} />
@@ -47,6 +54,10 @@ function App() {
         <Route path="/archiverStatus/noEvent" element={<NoeventTable />} />
         <Route path="/manual" element={<Manual />} />
         <Route path="/chartTest" element={<ChartTest />} />
+        <Route path="/networklist" element={<NetWorkList />} />
+        <Route path="/networklist/registerip" element={<CreateIp />} />
+        <Route path="/networklist/detailinfo" element={<DetailInfo />} />
+        <Route path="/networklist/update" element={<UpdateIp />} />
       </Routes>
     </BrowserRouter>
   );

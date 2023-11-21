@@ -1,0 +1,10 @@
+.CreateBox {
+  display: flex;
+}
+
+.Errmsg {
+  color: red;
+  border: 1px solid red;
+  text-align: center;
+  width: 500px;
+}
