@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
 
 function UpdateIp() {
   const navigate = useNavigate();
@@ -24,26 +25,42 @@ function UpdateIp() {
   const linkadd = location.state.linkadd;
   const summary = location.state.summary;
 
-  const allInfo = [
-    {
-      ip_address: ip_address,
-      mac: mac,
-    },
-  ];
+  const [allInfo, setAllInfo] = useState({
+    ip_address: ip_address,
+    mac: mac,
+    ip_status: alivestatus,
+    name: name,
+    name_id: nameId,
+    name_number: nameNumber,
+    location: localLocation,
+    link_address: linkadd,
+    source_dir: sourceDIr,
+    admin: admin,
+    os_info: osInfo,
+    hostname: hostname,
+    user: user,
+    password: password,
+    sshport_info: sshport,
+    applied_security: security,
+    switch_info: switchInfo,
+    summary: summary,
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    setAllInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
   };
 
   const handleInputClick = (e) => {
     const { name, checked } = e.target;
+    setAllInfo((prevInfo) => ({ ...prevInfo, [name]: checked }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/getdb/update/${ip_address}`,
+      const response = await axios.patch(
+        `http://127.0.0.1:8000/getdb/update/${ip_address}/`,
         allInfo,
         {
           withCredentials: true,
@@ -73,7 +90,7 @@ function UpdateIp() {
                 type="text"
                 required
                 name="name"
-                value={name}
+                defaultValue={name}
                 onChange={handleInputChange}
               />
             </li>
@@ -83,7 +100,7 @@ function UpdateIp() {
                 type="text"
                 required
                 name="name_number"
-                value={nameNumber}
+                defaultValue={nameNumber}
                 onChange={handleInputChange}
               />
             </li>
@@ -93,7 +110,7 @@ function UpdateIp() {
                 type="text"
                 required
                 name="admin"
-                value={admin}
+                defaultValue={admin}
                 onChange={handleInputChange}
               />
             </li>
@@ -102,10 +119,10 @@ function UpdateIp() {
               <select
                 required
                 name="name_id"
-                value={nameId}
+                defaultValue={nameId}
                 onChange={handleInputChange}
               >
-                <option value={nameId} disabled selected>
+                <option defaultValue={nameId} disabled selected>
                   구분 선택
                 </option>
                 <option value="EPICS IOC"> EPICS IOC</option>
@@ -123,7 +140,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="location"
-                value={localLocation}
+                defaultValue={localLocation}
                 onChange={handleInputChange}
               />
             </li>
@@ -132,7 +149,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="switch_info"
-                value={switchInfo}
+                defaultValue={switchInfo}
                 onChange={handleInputChange}
               />
             </li>
@@ -141,7 +158,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="source_dir"
-                value={sourceDIr}
+                defaultValue={sourceDIr}
                 onChange={handleInputChange}
               />
             </li>
@@ -150,7 +167,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="os_info"
-                value={osInfo}
+                defaultValue={osInfo}
                 onChange={handleInputChange}
               />
             </li>
@@ -159,7 +176,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="hostname"
-                value={hostname}
+                defaultValue={hostname}
                 onChange={handleInputChange}
               />
             </li>
@@ -168,7 +185,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="user"
-                value={user}
+                defaultValue={user}
                 onChange={handleInputChange}
               />
             </li>
@@ -177,7 +194,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="password"
-                value={password}
+                defaultValue={password}
                 onChange={handleInputChange}
               />
             </li>
@@ -186,7 +203,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="sshport_info"
-                value={sshport}
+                defaultValue={sshport}
                 onChange={handleInputChange}
               />
             </li>
@@ -195,7 +212,7 @@ function UpdateIp() {
               <input
                 type="checkbox"
                 name="applied_security"
-                value={security}
+                defaultValue={security}
                 onChange={handleInputClick}
               />
             </li>
@@ -204,7 +221,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="link_address"
-                value={linkadd}
+                defaultValue={linkadd}
                 onChange={handleInputChange}
               />
             </li>
@@ -213,7 +230,7 @@ function UpdateIp() {
               <input
                 type="text"
                 name="summary"
-                value={summary}
+                defaultValue={summary}
                 onChange={handleInputChange}
               />
             </li>

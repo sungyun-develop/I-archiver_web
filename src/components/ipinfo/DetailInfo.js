@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import styled from "./DetailInfo.module.css";
+
 function DetailInfo() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,7 +70,25 @@ function DetailInfo() {
       setSecurity(json.applied_security);
       setLinkadd(json.link_address);
       setSummary(json.summary);
-      setWriteTime(json.write_time);
+      let time = new Date(json.write_time);
+      let day = ["일", "월", "화", "수", "목", "금", "토"];
+      let date =
+        time.getFullYear() +
+        "년" +
+        (time.getMonth() + 1) +
+        "월" +
+        time.getDate() +
+        "일" +
+        day[time.getDay()] +
+        "요일  " +
+        time.getHours() +
+        "시" +
+        time.getMinutes() +
+        "분" +
+        time.getSeconds() +
+        "초 ";
+
+      setWriteTime(date);
     } catch (error) {
       console.error(`네트워크 에러 발생 응답이 없음 : ${error}`);
     }
@@ -125,29 +145,69 @@ function DetailInfo() {
   };
 
   return (
-    <div>
+    <div className={styled.InfoBox}>
       <h1>Detail Info</h1>
-      <ul>
-        <li>업데이트 시간 : {writeTime}</li>
-        <li>IP 주소 : {ip_address}</li>
-        <li>ID : {id}</li>
-        <li>MAC 주소 : {mac}</li>
-        <li>IP 활성화 상태 : {alivestatus}</li>
-        <li>자산명 : {name}</li>
-        <li>자산번호 : {nameNumber}</li>
-        <li>자산구분 : {nameId}</li>
-        <li>관리자 : {admin}</li>
-        <li>위치 : {localLocation}</li>
-        <li>스위치 정보 : {switchInfo}</li>
-        <li>소스 경로 : {sourceDIr}</li>
-        <li>OS : {osInfo}</li>
-        <li>HOSTNAME : {hostname}</li>
-        <li>user명 : {user}</li>
-        <li>비밀번호 : {password}</li>
-        <li>SSH PORT : {sshport}</li>
-        <li>보안조치 여부 : {security}</li>
-        <li>링크 접속 : {linkadd}</li>
-        <li>비고 : {summary}</li>
+      <ul className={styled.InfoDetail}>
+        <li>
+          <span>업데이트 시간</span> : {writeTime}
+        </li>
+        <li>
+          <span>IP 주소</span> : {ip_address}
+        </li>
+        <li>
+          <span>ID</span> : {id}
+        </li>
+        <li>
+          <span>MAC 주소</span> : {mac}
+        </li>
+        <li>
+          <span>IP 활성화 상태</span> : {alivestatus}
+        </li>
+        <li>
+          <span>자산명</span> : {name}
+        </li>
+        <li>
+          <span>자산번호</span> : {nameNumber}
+        </li>
+        <li>
+          <span>자산구분</span> : {nameId}
+        </li>
+        <li>
+          <span>관리자</span> : {admin}
+        </li>
+        <li>
+          <span>위치</span> : {localLocation}
+        </li>
+        <li>
+          <span>스위치 정보</span> : {switchInfo}
+        </li>
+        <li>
+          <span>소스 경로</span> : {sourceDIr}
+        </li>
+        <li>
+          <span>OS</span> : {osInfo}
+        </li>
+        <li>
+          <span>HOSTNAME</span> : {hostname}
+        </li>
+        <li>
+          <span>user명</span> : {user}
+        </li>
+        <li>
+          <span>비밀번호</span> : {password}
+        </li>
+        <li>
+          <span>SSH PORT</span> : {sshport}
+        </li>
+        <li>
+          <span>보안조치 여부</span> : {security}
+        </li>
+        <li>
+          <span>링크 접속</span> : {linkadd}
+        </li>
+        <li>
+          <span>비고</span> : {summary}
+        </li>
       </ul>
       <div>
         <button type="input" onClick={handleUpdateCall}>

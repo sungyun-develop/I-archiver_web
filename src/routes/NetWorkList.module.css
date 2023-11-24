@@ -5,8 +5,170 @@
 
 .newBox {
   margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 4px solid #6fffc4;
+  border-radius: 5%;
+  padding: 10px;
+  background-color: #e1f6fa;
+  transition: 0.5s all ease-in-out;
+}
+
+.newBox:hover {
+  background-color: #d2e1ff;
+}
+
+.newBox2 {
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 4px solid #6fffc4;
+  border-radius: 5%;
+  padding: 10px;
+  background-color: #fff064;
+  transition: 0.5s all ease-in-out;
+}
+
+.newBox2:hover {
+  background-color: #fac1c1;
+}
+
+.newBox > h2 {
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+.dataNumber {
+  font-size: 30px;
+  text-decoration: underline;
+  color: #ff9e9b;
+}
+
+.dataNumber:hover {
+  color: black;
 }
 
 .newBoxList {
   display: flex;
+  overflow: hidden;
+  height: 300px;
+  width: 521px;
+  align-self: center;
+  justify-content: center;
+}
+
+.ipList {
+  text-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex: 0 0 100%;
+}
+
+.ipItem {
+  font-size: 22px;
+  font-weight: bold;
+  color: #32a4ff;
+  list-style-type: none;
+  border-bottom: 2px solid gray;
+  padding: 10px 0;
+  position: relative;
+  margin-right: 10px;
+}
+
+.ipItem:before {
+  position: absolute;
+  top: 0;
+  left: 10;
+  overflow: hidden;
+  padding: 10px 0;
+  max-width: 0;
+  border-bottom: 2px solid orange;
+  color: orange;
+  content: attr(data-hover);
+  -webkit-transition: max-width 0.5s;
+  -moz-transition: max-width 0.5s;
+  transition: max-width 0.5s;
+}
+
+.ipItem:hover:before {
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.ipSearchingBox {
+}
+
+.ipSearchingBox > input:first-child {
+  width: 600px;
+  height: 80px;
+  text-align: center;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  outline: none;
+  border-bottom: 3px solid gray;
+  font-size: 25px;
+  transition: background 1s;
+  background-color: transparent;
+  position: relative;
+}
+
+.ipSearchingBox > input:first-child:hover,
+input:first-child:focus {
+  background-color: #fdcf8c;
+  border-top-left-radius: 3%;
+  border-bottom: 4px solid black;
+}
+
+.ipSearchingBox > input:last-child {
+  width: 100px;
+  height: 83px;
+  font-size: 20px;
+  font-weight: bolder;
+  color: transparent;
+  background: url(../img/search.png) no-repeat center center;
+  background-size: 70%;
+  background-color: #86a5ff;
+  transition: all 0.3s ease-in-out;
+}
+
+.ipSearchingBox > input:last-child:hover {
+  border: 3px solid black;
+  cursor: pointer;
+  background-color: #6fffc4;
+}
+
+.showSearching {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.noShow {
+  display: none;
+}
+
+.usingIp {
+  font-size: 30px;
+}
+
+.usingIp > span {
+  color: #2c952c;
+  text-decoration: underline;
+}
+
+.registerClick {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #32a4ff;
+  transition: 0.2s all;
+}
+
+.registerClick:hover {
+  color: #ff3232;
+  font-size: 20px;
 }

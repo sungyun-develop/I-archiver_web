@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import styled from "./CreateIp.module.css";
 import axios from "axios";
+import ximg from "../../img/ximg.png";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
@@ -20,21 +21,21 @@ function CreateIp() {
     ip_address: ip_address,
     mac: mac,
     ip_status: ip_status,
-    name: "",
-    name_number: "",
-    admin: "",
-    name_id: "",
-    location: "",
-    switch_info: "",
-    source_dir: "",
-    os_info: "",
-    hostname: "",
-    user: "",
-    password: "",
-    sshport_info: "",
+    name: " ",
+    name_number: "-",
+    admin: " ",
+    name_id: " ",
+    location: "-",
+    switch_info: "-",
+    source_dir: "-",
+    os_info: "-",
+    hostname: "-",
+    user: "-",
+    password: "-",
+    sshport_info: "-",
     applied_security: false,
-    link_address: "",
-    summary: "",
+    link_address: "-",
+    summary: "-",
   });
 
   const handleInputChange = (e) => {
@@ -81,16 +82,34 @@ function CreateIp() {
   };
 
   return (
-    <div>
-      <h1>IP : {ip_address} 등록</h1>
-      {showMessage && <h1 className={styled.Errmsg}>{message}</h1>}
-      <form onSubmit={handleSubmit}>
-        <ul>
-          <li>IP 주소 : {ip_address}</li>
-          <li>MAC 주소 : {mac}</li>
-          <li>IP 활성화 여부 : {ip_status}</li>
-          <li>
-            자산명 :{" "}
+    <div className={styled.CreateBox}>
+      <h1>IP정보 등록하기</h1>
+      {!!showMessage && (
+        <div className={styled.Errmsg}>
+          <img src={ximg}></img>
+          <h1>{message}</h1>
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className={styled.formBox}>
+        <div className={styled.defaultInfo}>
+          <div>
+            <h3>IP 주소</h3>
+            <h3>{ip_address}</h3>
+          </div>
+          <div>
+            <h3>MAC 주소</h3>
+            <h3>{mac}</h3>
+          </div>
+          <div>
+            <h3>IP 활성화 상태</h3>
+            {ip_status ? <h3>ON</h3> : <h3>OFF</h3>}
+          </div>
+        </div>
+        <div className={styled.inputForm}>
+          <div>
+            <h3>
+              자산명<span>*</span>
+            </h3>
             <input
               type="text"
               required
@@ -98,29 +117,34 @@ function CreateIp() {
               value={allInfo.name}
               onChange={handleInputChange}
             />
-          </li>
-          <li>
-            자산번호 :{" "}
+          </div>
+          <div>
+            <h3>자산번호</h3>
             <input
               type="text"
-              required
               name="name_number"
               value={allInfo.name_number}
               onChange={handleInputChange}
             />
-          </li>
-          <li>
-            관리자 :{" "}
+          </div>
+          <div>
+            <h3>
+              관리자<span>*</span>
+            </h3>
             <input
               type="text"
               required
               name="admin"
               value={allInfo.admin}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            구분 :{" "}
+            <h3 className={styled.description}>자산관리자로 입력해주세요</h3>
+          </div>
+          <div>
+            <h3>
+              자산 구분<span>*</span>
+            </h3>
             <select
               required
               name="name_id"
@@ -139,107 +163,126 @@ function CreateIp() {
               <option value="기타">기타</option>
               <option value="직접입력">직접입력</option>
             </select>
-          </li>
-          <li>
-            설치 위치 :{" "}
+          </div>
+          <div>
+            <h3>설치 위치</h3>
             <input
               type="text"
               name="location"
               value={allInfo.location}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            연결 스위치 :{" "}
+            <h3 className={styled.description}>예) 갤러리 102랙</h3>
+          </div>
+          <div>
+            <h3>연결된 스위치</h3>
             <input
               type="text"
               name="switch_info"
               value={allInfo.switch_info}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            소스파일 정보 :{" "}
+            <h3 className={styled.description}>예) L2#3_PO5</h3>
+          </div>
+          <div>
+            <h3>소스파일 정보</h3>
             <input
               type="text"
               name="source_dir"
               value={allInfo.source_dir}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            OS 정보 :{" "}
+            <h3 className={styled.description}>
+              예) /usr/local/epics/iocApps/iocName
+            </h3>
+          </div>
+          <div>
+            <h3>OS </h3>
             <input
               type="text"
-              name="os_info"
-              value={allInfo.os_info}
+              name="source_dir"
+              value={allInfo.source_dir}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            hostname :{" "}
+            <h3 className={styled.description}>예) Centos9, Windows11 ....</h3>
+          </div>
+          <div>
+            <h3>HOSTNAME</h3>
             <input
               type="text"
               name="hostname"
               value={allInfo.hostname}
               onChange={handleInputChange}
             />
-          </li>
-          <li>
-            계정명 :{" "}
+          </div>
+          <div>
+            <h3>사용자 계정</h3>
             <input
               type="text"
               name="user"
               value={allInfo.user}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            비밀번호 :{" "}
+            <h3 className={styled.description}>
+              SSH 접속이 가능한 계정으로 입력해주세요.
+            </h3>
+          </div>
+          <div>
+            <h3>비밀번호</h3>
             <input
               type="text"
               name="password"
               value={allInfo.password}
               onChange={handleInputChange}
             />
-          </li>
-          <li>
-            SSH PORT :{" "}
+          </div>
+          <div>
+            <h3>SSH PORT</h3>
             <input
               type="text"
               name="sshport_info"
               value={allInfo.sshport_info}
               onChange={handleInputChange}
             />
-          </li>
-          <li>
-            보안조치 여부 :{" "}
-            <input
-              type="checkbox"
-              name="applied_security"
-              onChange={handleInputClick}
-            />
-          </li>
-          <li>
-            링크 :{" "}
+          </div>
+
+          <div>
+            <h3>링크 주소</h3>
             <input
               type="text"
               name="link_address"
               value={allInfo.link_address}
               onChange={handleInputChange}
+              className={styled.includeDesc}
             />
-          </li>
-          <li>
-            비고 :{" "}
+            <h3 className={styled.description}>
+              web 접속이 가능한 주소를 입력해주세요
+            </h3>
+          </div>
+          <div className={styled.security}>
+            <h3>보안조치 적용?</h3>
+            <input
+              type="checkbox"
+              name="applied_security"
+              onChange={handleInputClick}
+            />
+          </div>
+          <div>
+            <h3>비고</h3>
             <input
               type="text"
               name="summary"
               value={allInfo.summary}
               onChange={handleInputChange}
             />
-          </li>
-        </ul>
-        <input type="submit" value="등록" />
+          </div>
+        </div>
+        <input className={styled.submitBtn} type="submit" value="등록" />
       </form>
     </div>
   );

@@ -1,0 +1,87 @@
+.testBox {
+  display: flex;
+  margin-top: 10px;
+  padding: 10px;
+  align-items: center;
+}
+
+.testBox > button {
+  font-size: 30px;
+  margin-right: 15px;
+}
+
+.pingRes {
+  display: flex;
+  align-items: center;
+}
+
+/*ping 성공 시*/
+.toshort1 {
+  background-color: #a8f552;
+  color: transparent;
+  width: 60px;
+  height: 50px;
+  border-radius: 100%;
+  transition: 0.5s all ease-in-out;
+}
+
+/*ping 실패 시*/
+.toshort2 {
+  background-color: #ff0000;
+  color: transparent;
+  width: 60px;
+  height: 50px;
+  border-radius: 100%;
+
+  transition: 0.5s all ease-in-out;
+}
+
+.toshort1:hover,
+.toshort2:hover {
+  border-radius: 0;
+  width: 400px;
+  height: 100px;
+  color: gray;
+  background-color: transparent;
+}
+
+.tolong {
+  height: 80px;
+  width: 600px;
+  opacity: 60%;
+  color: #aaaaaa;
+  border-radius: 20px;
+  background-color: #28a0ff;
+  transition: 1s all ease-in-out;
+}
+
+.tolong:hover {
+  opacity: 100%;
+  color: black;
+}
+
+.noClick {
+  display: none;
+}
+
+.BtnClick {
+  font-size: 20px;
+}
+
+.backBtn {
+  width: 100px;
+  height: 100px;
+  border: none;
+  background-color: transparent;
+  transition: 0.2s all ease-in;
+}
+
+.backBtn > img {
+  width: 60%;
+  height: 70%;
+}
+
+.backBtn:hover {
+  background-color: #dcdcdc;
+  border-radius: 30%;
+}

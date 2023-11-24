@@ -1,0 +1,35 @@
+.loadingBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  width: 600px;
+}
+
+.loadingText {
+  font-size: 24px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.loadingText span {
+  display: inline-block;
+  transform: translateY(1em);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.progress {
+  width: 500px;
+  height: 30px;
+}
