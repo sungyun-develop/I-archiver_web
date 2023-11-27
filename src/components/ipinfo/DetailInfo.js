@@ -146,7 +146,7 @@ function DetailInfo() {
 
   return (
     <div className={styled.InfoBox}>
-      <h1>Detail Info</h1>
+      <span className={styled.subject}>{ip_address} 세부 정보</span>
       <ul className={styled.InfoDetail}>
         <li>
           <span>업데이트 시간</span> : {writeTime}
@@ -209,12 +209,20 @@ function DetailInfo() {
           <span>비고</span> : {summary}
         </li>
       </ul>
-      <div>
-        <button type="input" onClick={handleUpdateCall}>
-          modify
+      <div className={styled.buttonBox}>
+        <button
+          type="input"
+          className={styled.modifyBtn}
+          onClick={handleUpdateCall}
+        >
+          수정
         </button>
-        <button type="input" onClick={handleDeleteCall}>
-          delete
+        <button
+          type="input"
+          className={styled.deleteBtn}
+          onClick={handleDeleteCall}
+        >
+          삭제
         </button>
       </div>
     </div>

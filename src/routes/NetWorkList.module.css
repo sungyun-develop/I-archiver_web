@@ -32,7 +32,23 @@
 }
 
 .newBox2:hover {
-  background-color: #fac1c1;
+  background-color: #ffd732;
+}
+
+.newBox3 {
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 4px solid #6fffc4;
+  border-radius: 5%;
+  padding: 10px;
+  background-color: #ff7878;
+  transition: 0.5s all ease-in-out;
+}
+
+.newBox3:hover {
+  background-color: #ff5a5a;
 }
 
 .newBox > h2 {

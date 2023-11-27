@@ -1,0 +1,129 @@
+.UpdateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  background-color: #e1f6fa;
+}
+
+@keyframes borderBlink {
+  0% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: red;
+  }
+  100% {
+    border-color: transparent;
+  }
+}
+
+.Errmsg {
+  color: red;
+  border: 2px solid transparent;
+  text-align: center;
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  animation: borderBlink 2s infinite;
+  margin-bottom: 10px;
+}
+
+.Errmsg > img {
+  width: 60px;
+  height: 40px;
+}
+
+.formBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.defaultInfo {
+  display: flex;
+  align-items: center;
+}
+.defaultInfo > div {
+  margin-right: 20px;
+  align-items: center;
+  text-align: center;
+  padding: 5px;
+  background-color: #cebee1;
+  border-radius: 5%;
+}
+
+.defaultInfo > div:hover {
+  background-color: #a0a0ff;
+}
+
+.inputForm {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  width: 100%;
+}
+
+.description {
+  display: none;
+  color: gray;
+  font-style: italic;
+  text-decoration: underline;
+}
+
+.includeDesc:focus + .description {
+  display: block;
+}
+
+.inputForm > div {
+  width: 100%;
+}
+
+.inputForm > div > input {
+  width: 100%;
+  height: 40px;
+  font-size: 20px;
+  padding-left: 10px;
+}
+.inputForm > div > select {
+  width: 100%;
+  height: 40px;
+  font-size: 25px;
+}
+
+.inputForm > div > input:hover {
+  background-color: #dcdcdc;
+}
+
+.inputForm > div > select:hover {
+  background-color: #3c3c3c;
+  color: whitesmoke;
+}
+
+h3 > span {
+  color: red;
+}
+
+.security {
+  display: flex;
+  align-items: center;
+}
+.security > h3 {
+  width: 50%;
+}
+
+.submitBtn {
+  margin: 20px 0;
+  width: 100%;
+  height: 70px;
+  font-size: 40px;
+  font-weight: bolder;
+  background-color: #f0cb85;
+}
+
+.submitBtn:hover {
+  background-color: #ffcf28;
+}

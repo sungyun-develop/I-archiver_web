@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import styled from "./UpdateIp.module.css";
 
 function UpdateIp() {
   const navigate = useNavigate();
@@ -76,168 +77,200 @@ function UpdateIp() {
     }
   };
   return (
-    <div>
-      <div>
-        <h1>IP : {ip_address} 수정</h1>
-        <form onSubmit={handleSubmit}>
-          <ul>
-            <li>IP 주소 : {ip_address}</li>
-            <li>MAC 주소 : {mac}</li>
-            <li>IP 활성화 여부 : {alivestatus}</li>
-            <li>
-              자산명 :{" "}
-              <input
-                type="text"
-                required
-                name="name"
-                defaultValue={name}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              자산번호 :{" "}
-              <input
-                type="text"
-                required
-                name="name_number"
-                defaultValue={nameNumber}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              관리자 :{" "}
-              <input
-                type="text"
-                required
-                name="admin"
-                defaultValue={admin}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              구분 :{" "}
-              <select
-                required
-                name="name_id"
-                defaultValue={nameId}
-                onChange={handleInputChange}
-              >
-                <option defaultValue={nameId} disabled selected>
-                  구분 선택
-                </option>
-                <option value="EPICS IOC"> EPICS IOC</option>
-                <option value="Windows PC">Windows PC</option>
-                <option value="서버">서버</option>
-                <option value="카메라">카메라</option>
-                <option value="PLC">PLC</option>
-                <option value="VME 보드">VME 보드</option>
-                <option value="기타">기타</option>
-                <option value="직접입력">직접입력</option>
-              </select>
-            </li>
-            <li>
-              설치 위치 :{" "}
-              <input
-                type="text"
-                name="location"
-                defaultValue={localLocation}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              연결 스위치 :{" "}
-              <input
-                type="text"
-                name="switch_info"
-                defaultValue={switchInfo}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              소스파일 정보 :{" "}
-              <input
-                type="text"
-                name="source_dir"
-                defaultValue={sourceDIr}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              OS 정보 :{" "}
-              <input
-                type="text"
-                name="os_info"
-                defaultValue={osInfo}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              hostname :{" "}
-              <input
-                type="text"
-                name="hostname"
-                defaultValue={hostname}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              계정명 :{" "}
-              <input
-                type="text"
-                name="user"
-                defaultValue={user}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              비밀번호 :{" "}
-              <input
-                type="text"
-                name="password"
-                defaultValue={password}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              SSH PORT :{" "}
-              <input
-                type="text"
-                name="sshport_info"
-                defaultValue={sshport}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              보안조치 여부 :{" "}
-              <input
-                type="checkbox"
-                name="applied_security"
-                defaultValue={security}
-                onChange={handleInputClick}
-              />
-            </li>
-            <li>
-              링크 :{" "}
-              <input
-                type="text"
-                name="link_address"
-                defaultValue={linkadd}
-                onChange={handleInputChange}
-              />
-            </li>
-            <li>
-              비고 :{" "}
-              <input
-                type="text"
-                name="summary"
-                defaultValue={summary}
-                onChange={handleInputChange}
-              />
-            </li>
-          </ul>
-          <input type="submit" value="등록" />
-        </form>
-      </div>
+    <div className={styled.UpdateBox}>
+      <h1>IP : {ip_address} 수정</h1>
+      <form onSubmit={handleSubmit} className={styled.formBox}>
+        <div className={styled.defaultInfo}>
+          <div>
+            <h3>IP 주소</h3>
+            <h3>{ip_address}</h3>
+          </div>
+          <div>
+            <h3>MAC 주소</h3>
+            <h3>{mac}</h3>
+          </div>
+          <div>
+            <h3>IP 활성화 상태</h3>
+            {alivestatus ? <h3>ON</h3> : <h3>OFF</h3>}
+          </div>
+        </div>
+        <div className={styled.inputForm}>
+          <div>
+            <h3>자산명</h3>
+            <input
+              type="text"
+              required
+              name="name"
+              defaultValue={name}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <h3>자산번호</h3>
+            <input
+              type="text"
+              required
+              name="name_number"
+              defaultValue={nameNumber}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <h3>관리자</h3>
+            <input
+              type="text"
+              required
+              name="admin"
+              defaultValue={admin}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>자산관리자로 입력해주세요</h3>
+          </div>
+          <div>
+            <h3>자산 구분</h3>
+            <select
+              required
+              name="name_id"
+              defaultValue={nameId}
+              onChange={handleInputChange}
+            >
+              <option defaultValue={nameId} disabled selected>
+                구분 선택
+              </option>
+              <option value="EPICS IOC"> EPICS IOC</option>
+              <option value="Windows PC">Windows PC</option>
+              <option value="서버">서버</option>
+              <option value="카메라">카메라</option>
+              <option value="PLC">PLC</option>
+              <option value="VME 보드">VME 보드</option>
+              <option value="기타">기타</option>
+              <option value="직접입력">직접입력</option>
+            </select>
+          </div>
+          <div>
+            <h3>설치 위치</h3>
+            <input
+              type="text"
+              name="location"
+              defaultValue={localLocation}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>예) 갤러리 102랙</h3>
+          </div>
+          <div>
+            <h3>연결 스위치</h3>
+            <input
+              type="text"
+              name="switch_info"
+              defaultValue={switchInfo}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>예) L2#3_PO5</h3>
+          </div>
+          <div>
+            <h3>소스파일 정보 </h3>
+            <input
+              type="text"
+              name="source_dir"
+              defaultValue={sourceDIr}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>
+              예) /usr/local/epics/iocApps/iocName
+            </h3>
+          </div>
+          <div>
+            <h3>OS 정보</h3>
+            <input
+              type="text"
+              name="os_info"
+              defaultValue={osInfo}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>예) Centos9, Windows11 ....</h3>
+          </div>
+          <div>
+            <h3>HOSTNAME</h3>
+            <input
+              type="text"
+              name="hostname"
+              defaultValue={hostname}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <h3>계정명</h3>
+            <input
+              type="text"
+              name="user"
+              defaultValue={user}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>
+              SSH 접속이 가능한 계정으로 입력해주세요.
+            </h3>
+          </div>
+          <div>
+            <h3>비밀번호</h3>
+            <input
+              type="text"
+              name="password"
+              defaultValue={password}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <h3>SSH 포트</h3>
+            <input
+              type="text"
+              name="sshport_info"
+              defaultValue={sshport}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <h3>링크 정보</h3>
+            <input
+              type="text"
+              name="link_address"
+              defaultValue={linkadd}
+              onChange={handleInputChange}
+              className={styled.includeDesc}
+            />
+            <h3 className={styled.description}>
+              web 접속이 가능한 주소를 입력해주세요
+            </h3>
+          </div>
+          <div>
+            <h3>보안조치 여부</h3>
+            <input
+              type="checkbox"
+              name="applied_security"
+              defaultValue={security}
+              onChange={handleInputClick}
+            />
+          </div>
+          <div>
+            <h3>비고</h3>
+            <input
+              type="text"
+              name="summary"
+              defaultValue={summary}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <input type="submit" value="등록" className={styled.submitBtn} />
+      </form>
     </div>
   );
 }

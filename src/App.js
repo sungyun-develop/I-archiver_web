@@ -14,6 +14,7 @@ import NetWorkList from "./routes/NetWorkList";
 import CreateIp from "./components/ipinfo/CreateIp";
 import DetailInfo from "./components/ipinfo/DetailInfo";
 import UpdateIp from "./components/ipinfo/UpdateIp";
+import CollapseMac from "./components/ipinfo/CollapseMac";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
         <Route path="/networklist/registerip" element={<CreateIp />} />
         <Route path="/networklist/detailinfo" element={<DetailInfo />} />
         <Route path="/networklist/update" element={<UpdateIp />} />
+        <Route path="/networklist/collapse" element={<CollapseMac />} />
       </Routes>
     </BrowserRouter>
   );
