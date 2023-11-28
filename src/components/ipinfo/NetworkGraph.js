@@ -1,17 +1,18 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import styled from "./NetworkGraph.module.css"
 
 function NetworkGraph() {
   const svgRef = useRef(null);
   const nodes = [
-    { id: "BB#1", value: 5, fixed: true, x: 500, y: 0 },
-    { id: "BB#2", value: 5, fixed: true, x: 250, y: 0 },
-    { id: "10번", value: 1 },
-    { id: "11번", value: 1 },
-    { id: "12번", value: 1 },
-    { id: "13번", value: 1 },
-    { id: "100번", value: 1 },
-    { id: "101번", value: 1 },
+    { id: "BB#1", value: 10, fixed: true, x: 110, y: 440},
+    { id: "BB#2", value: 10, fixed: true, x: 1030, y: 440},
+    { id: "10번", value: 6 , fixed: true, x: 10, y: 290},
+    { id: "11번", value: 6 , fixed: true, x: 610, y: 260},
+    { id: "12번", value: 6 , fixed: true, x: 1170, y: 290},
+    { id: "13번", value: 6 , fixed: true, x: 10, y: 620},
+    { id: "100번", value: 6 , fixed: true, x: 610, y: 650},
+    { id: "101번", value: 6 , fixed: true, x: 1170, y: 620},
   ];
   const links = [
     { source: "BB#1", target: "BB#2" },
@@ -30,77 +31,133 @@ function NetworkGraph() {
     { source: "101번", target: "BB#2" },
   ];
   useEffect(() => {
-    const width = 1000;
-    const height = 400;
+    const width = 1300;
+    const height = 1000;
+
+
+
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
       .attr("height", height);
 
+
+
     svg.selectAll("*").remove();
+    
+    svg.append("text")
+    .attr("x", 250)
+    .attr("y", 70)
+    .attr("fill", "#2828cd")
+    .attr("text-anchor", "middle")
+    .style("font-size", "40px")
+    .style("font-weight", "bold")
+    .text("양성자가속기 네트워크")
+
+    svg.append("text")
+    .attr("x", 650)
+    .attr("y", 70)
+    .attr("text-anchor", "middle")
+    .style("font-size", "30px")
+    .style("font-weight", "bold")
+    .text("(대역별 정보 확인은 클릭)")
+    
     const link = svg
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke", "black")
-      .attr("stroke-width", 1);
+      .attr("stroke", (d) => {
+
+        return (d.target.id === "BB#1" && d.source.id != "BB#2" ? "#f5af64" : d.target.id === "BB#2" && d.source.id != "BB#1"  ? "green" : "black")
+      })
+      .attr("stroke-width", (d) => (d.target.id === "BB#1" && d.source.id === "BB#2" ? 10 : 4))
+      .attr("stroke-dasharray", (d) => (d.target.id === "BB#1" && d.source.id === "BB#2" ? "10,10" : "none") );
     const node = svg
       .selectAll("g")
       .data(nodes)
       .join("g")
       .each(function (d) {
         d3.select(this)
-          .append("circle")
-          .attr("r", d.value * 5)
-          .attr("fill", "skyblue");
+          .append("rect")
+          .attr("width", d.value *20)
+          .attr("height", d.value*20)
+          .style("stroke", "#a0a0ff")
+          .style("stroke-width", 5)
+          .attr("fill", "#46649b")
+          .on("mouseover", function () {
+            d3.select(this).attr("fill", "#91b9f5").style("cursor", "pointer");
+          })
+          .on("mouseout", function () {
+            d3.select(this).attr("fill", "#46649b").style("cursor", "default");
+          })
+          .on("click", function () {
+            handleClickList(d.id)
+          });
         d3.select(this)
           .append("text")
           .text((d) => d.id)
-          .attr("x", -5)
-          .attr("y", 5);
+          .attr("x",d.value*10 )
+          .attr("y", d.value*10 +5)
+          .style("text-anchor", "middle")
+          .style("font-size", "22px")
+          .style("fill", "#6fffc4")
+          .on("mouseover", function () {
+            d3.select(this).style("cursor", "pointer");
+          })
+          .on("mouseout", function () {
+            d3.select(this).style("cursor", "default");
+          })
+          .on("click", function () {
+            handleClickList(d.id)
+          });
       });
     const simulation = d3
       .forceSimulation(nodes)
       .force(
         "link",
-        d3.forceLink(links).id((d) => d.id)
-      )
-      .force("charge", d3.forceManyBody().strength(-500))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force(
-        "collide",
-        d3.forceCollide().radius(function (d) {
-          return d.value * 8;
+        d3.forceLink(links).id((d) => d.id).distance((d) => {
+          return (d.source.id === "BB#1" || d.source.id === "BB#2" ? 440 : d.source.id === "11번" || d.source.id === "100번" ? 350 : 550)
         })
+    
       )
       .force(
         "x",
         d3
           .forceX()
-          .strength(0.1)
           .x((d) => (d.fixed ? d.x : null))
       ) // X 좌표 고정
       .force(
         "y",
         d3
           .forceY()
-          .strength(0.1)
           .y((d) => (d.fixed ? d.y : null))
       ) // Y 좌표 고정
       .on("tick", () => {
         link
-          .attr("x1", (d) => d.source.x)
-          .attr("y1", (d) => d.source.y)
-          .attr("x2", (d) => d.target.x)
-          .attr("y2", (d) => d.target.y);
+          .attr("x1", (d) => d.source.x +d.source.value*10)
+          .attr("y1", (d) => d.source.y +d.source.value*10)
+          .attr("x2", (d) => d.target.x +d.source.value*10)
+          .attr("y2", (d) => d.target.y+d.source.value*10);
         node.attr("transform", (d) => `translate(${d.x}, ${d.y})`);
       });
-  }, [nodes, links]);
+  }, []);
+
+  const exportNumbers = (name) => {
+    const numberOnly = name.replace(/[^0-9]/g, '');
+    return numberOnly;
+  }
+  const handleClickList = (name) => {
+    console.log(name);
+    console.log('call the list')
+    if (name != "BB#1" && name != "BB#2") {
+      console.log(exportNumbers(name))
+    }
+    
+  }
 
   return (
     <div>
-      <h1>hi</h1>
-      <svg ref={svgRef}></svg>
+      <svg ref={svgRef} className={styled.graphBox}></svg>
     </div>
   );
 }

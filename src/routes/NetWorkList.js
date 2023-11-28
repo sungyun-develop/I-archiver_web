@@ -131,6 +131,7 @@ function NetWorkList() {
   };
 
   const handleValidateInput = (event) => {
+    event.preventDefault();
     const value = event.target.value;
     const regex = /^[0-9.]*$/;
     if (regex.test(value)) {
@@ -309,8 +310,10 @@ function NetWorkList() {
               </div>
             </div>
           </div>
+
         </div>
       )}
+      <NetworkGraph />
       <div>
         <form className={styled.ipSearchingBox} onSubmit={handleSearching}>
           <input
@@ -387,11 +390,12 @@ function NetWorkList() {
             </div>
           </div>
         </div>
-        <h1>aaa</h1>
       </div>
       <div>
-        <NetworkGraph />
+        <h2>각 IP별 특징을 나타내는 창을 구현</h2>
+        <h2>all, 10, 11, ,12 ,13, 100, 101에 대해 </h2>
       </div>
+
       <div>
         <h2>등록된 IP 리스트</h2>
         <ul>

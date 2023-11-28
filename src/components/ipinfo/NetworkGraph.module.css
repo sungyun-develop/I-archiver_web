@@ -1,0 +1,14 @@
+.graphBox {
+    margin-top: 30px;
+    background-color: #78e6e6;
+    border: 3px solid green;
+    box-shadow: 3px 3px 3px 3px gray;
+    border-radius: 20px;
+    transition: 0.3s all ease-in-out;
+}
+
+.graphBox:hover {
+    border: 6px solid #8ae634;
+    background-color: #9bedbc;
+    box-shadow: none;
+}
