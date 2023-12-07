@@ -36,7 +36,7 @@ function CollapseMac() {
   const getDetail = async () => {
     try {
       const json = await (
-        await fetch(`http://127.0.0.1:8000/getdb/${ip_address}/`)
+        await fetch(`http://192.168.100.71:8000/getdb/${ip_address}/`)
       ).json();
 
       let time = new Date(json.write_time);

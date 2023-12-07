@@ -51,7 +51,7 @@ function DetailInfo() {
   const getDetail = async () => {
     try {
       const json = await (
-        await fetch(`http://127.0.0.1:8000/getdb/${ip_address}/`)
+        await fetch(`http://192.168.100.71:8000/getdb/${ip_address}/`)
       ).json();
       setMac(json.mac);
       setAlivestatus(json.ip_status);
@@ -97,7 +97,7 @@ function DetailInfo() {
   const deleteId = async () => {
     try {
       const json = await axios.delete(
-        `http://127.0.0.1:8000/getdb/delete/${ip_address}`
+        `http://192.168.100.71:8000/getdb/delete/${ip_address}`
       );
       console.log("Item deleted sucessfully:", json.data);
       navigate("/networklist/");
@@ -200,7 +200,7 @@ function DetailInfo() {
           <span>SSH PORT</span> : {sshport}
         </li>
         <li>
-          <span>보안조치 여부</span> : {security}
+          <span>보안조치 여부</span> : {security ? "조치되어 있음" : "조치안함"}
         </li>
         <li>
           <span>링크 접속</span> : {linkadd}

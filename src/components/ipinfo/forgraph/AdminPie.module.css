@@ -1,0 +1,35 @@
+.wbody {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 5px dashed gray;
+  border-radius: 20px;
+  padding: 15px;
+  background-color: #f4ffff;
+  transition: 0.3s all ease-in-out;
+}
+
+.wbody:hover {
+  border: 5px dashed #ff895a;
+}
+
+.piebody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.piebody > svg {
+  background-color: transparent;
+  padding: 20px;
+}
+
+.legend {
+  font-size: 20px;
+  list-style-type: none;
+  font-weight: bold;
+}
+
+.legend > li {
+  padding: 3px;
+}

@@ -13,6 +13,7 @@ import modalStateReducer2 from "./component/modalStateReducer2";
 import AnnotationContent from "./component/AnnotationContent";
 import TimestampReducer from "./component/TimestampReducer";
 import PVlistReducer from "./component/PVlistReducer";
+import ipinfoReducer from "./component/IpinfoCallStatus";
 
 const persistConfig = {
   key: "root",
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   annotContent: AnnotationContent,
   timestamp: TimestampReducer,
   searchingList: PVlistReducer,
+  ipinfo: ipinfoReducer,
 });
 
 export default persistReducer(persistConfig, rootReducer);

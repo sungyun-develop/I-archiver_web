@@ -61,7 +61,7 @@ function UpdateIp() {
     e.preventDefault();
     try {
       const response = await axios.patch(
-        `http://127.0.0.1:8000/getdb/update/${ip_address}/`,
+        `http://192.168.100.71:8000/getdb/update/${ip_address}/`,
         allInfo,
         {
           withCredentials: true,
@@ -145,6 +145,9 @@ function UpdateIp() {
               <option value="카메라">카메라</option>
               <option value="PLC">PLC</option>
               <option value="VME 보드">VME 보드</option>
+              <option value="전원 장치">전원 장치</option>
+              <option value="스위치">스위치</option>
+              <option value="계측기">계측기</option>
               <option value="기타">기타</option>
               <option value="직접입력">직접입력</option>
             </select>

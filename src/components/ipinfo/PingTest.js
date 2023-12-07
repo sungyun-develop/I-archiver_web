@@ -1,6 +1,6 @@
 import axios from "axios";
 import styled from "./PingTest.module.css";
-import { createContext, useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LoadingContext } from "./../../routes/NetWorkList";
 import backArrImg from "./../../img/back_arrow.png";
 
@@ -10,6 +10,8 @@ function PingTest({ ip_address }) {
   const [pingTest, setPingTest] = useState(false);
   const { setLoading3 } = useContext(LoadingContext);
 
+  console.log(useContext(LoadingContext));
+
   console.log(responseTm);
   const handleIpCheck = (event) => {
     event.preventDefault();
@@ -17,7 +19,7 @@ function PingTest({ ip_address }) {
     setPingTest(true);
 
     axios
-      .get(`http://127.0.0.1:8000/nmsinfo/check-ping/${ip_address}/`)
+      .get(`http://192.168.100.71:8000/nmsinfo/check-ping/${ip_address}/`)
       .then((response) => {
         console.log("응답...........");
         console.log(response.data.message);
@@ -55,9 +57,15 @@ function PingTest({ ip_address }) {
       });
   };
 
-  const handleGoback = () => {
+  const handleGoback = (event) => {
+    event.preventDefault();
     setPingTest(false);
   };
+
+  useEffect(() => {
+    console.log("aaaaaaaaaaaaaaaaaaa");
+    setLoading3(false);
+  }, []);
   return (
     <div className={styled.testBox}>
       <button

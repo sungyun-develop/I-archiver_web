@@ -65,3 +65,8 @@ export const updatePVlist = (data) => ({
   type: "UPDATE_PVlist",
   payload: data,
 });
+
+export const updateipinfo = (data) => ({
+  type: "UPDATE_IPINFO",
+  payload: data,
+});

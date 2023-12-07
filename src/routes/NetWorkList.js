@@ -1,8 +1,7 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext, useRef } from "react";
 import styled from "./NetWorkList.module.css";
 import CreateIp from "../components/ipinfo/CreateIp";
 import { useNavigate, Link } from "react-router-dom";
-import { indexOf } from "lodash";
 import Loading from "../components/Loading";
 import noresultImg from "./../img/noresult.png";
 
@@ -10,12 +9,28 @@ import axios from "axios";
 import PingTest from "../components/ipinfo/PingTest";
 import NetworkGraph from "../components/ipinfo/NetworkGraph";
 
+import plcImg from "./../img/plc.png";
+import iocImg from "./../img/IOC.png";
+import desktopImg from "./../img/desktop.png";
+import serverImg from "./../img/server.png";
+import vmeImg from "./../img/vme.png";
+import cameraImg from "./../img/cctv.png";
+import psImg from "./../img/ps.png";
+import switchImg from "./../img/switch.png";
+import etcImg from "./../img/saw.png";
+import centosImg from "./../img/centos.png";
+import windowImg from "./../img/windows.png";
+import AllipList from "../components/ipinfo/AllipList";
+import PieChartforIP from "../components/ipinfo/PieChartforIP";
+import refreshImg from "./../img/reload.png";
+
 export const LoadingContext = createContext();
 
 function NetWorkList() {
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(true);
   const [loading3, setLoading3] = useState(true);
+  const [loading4, setLoading4] = useState(true);
   const [newIplist, setNewIplist] = useState([]);
   const [newIpinfo, setNewIpInfo] = useState([]);
   const [djanIplist, setDjanIplist] = useState([]);
@@ -40,7 +55,9 @@ function NetWorkList() {
 
   const getAPI = async () => {
     try {
-      const json = await (await fetch(`http://127.0.0.1:8000/nmsinfo`)).json();
+      const json = await (
+        await fetch(`http://192.168.100.71:8000/nmsinfo`)
+      ).json();
       console.log(json);
       setNewIpInfo(json);
       setNewIplist(
@@ -58,7 +75,10 @@ function NetWorkList() {
 
   const getIpdb = async () => {
     try {
-      const json = await (await fetch("http://127.0.0.1:8000/getdb")).json();
+      let page = 1;
+      const json = await (
+        await fetch("http://192.168.100.71:8000/getdb")
+      ).json();
       setDjanIpInfo(json);
       setDjanIplist(
         json.map(function (item) {
@@ -108,6 +128,8 @@ function NetWorkList() {
 
   const handleRefresh = () => {
     setRefresh(1);
+    setRequestSearching(false);
+    setIpcheck("");
   };
 
   const handleRegister = (info) => {
@@ -172,47 +194,15 @@ function NetWorkList() {
     }
   };
 
-  const handleIpCheck = (event) => {
-    event.preventDefault();
-    setLoading3(true);
-    setPingTest(true);
-
-    axios
-      .get(`http://127.0.0.1:8000/nmsinfo/check-ping/${ipcheck}/`)
-      .then((response) => {
-        console.log("응답...........");
-        console.log(response.data.message);
-        const regex = /[^0-9.]/g;
-        const msg = response.data.message;
-        if (response.data.success == true) {
-          console.log("수신 성공");
-          const result = msg.replace(regex, "");
-          console.log(result);
-
-          setResponseTm(
-            `${(parseFloat(result) * Math.pow(10, 6)).toFixed(3).toString()}ns`
-          );
-          if (isNaN(responseTm)) {
-            setPingRes(false);
-          } else {
-            setPingRes(true);
-          }
-        } else {
-          setPingRes(false);
-          setResponseTm("---");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading3(false);
-      });
-  };
-
   const handleGoDetail = () => {
     let idx = djanIplist.indexOf(ipcheck);
     handleDetailClick(idx, ipcheck);
+  };
+
+  const handleGodetailNewip = () => {
+    let idx = djanIplist.length - 1;
+    let ip = djanIplist[idx];
+    handleDetailClick(idx, ip);
   };
 
   const handleCollapse = (idx, item) => {
@@ -229,183 +219,207 @@ function NetWorkList() {
     });
   };
 
+  useEffect(() => {
+    if (loading3 == false) {
+      setLoading4(false);
+    }
+  }, [loading3]);
+
   return (
     <div>
-      {loading || loading2 || loading3 ? (
+      {loading || loading2 || loading4 ? (
         <Loading />
       ) : (
-        <div>
-          <h1>ip 목록</h1>
-          <button onClick={handleRefresh}>refresh</button>
+        <div className={styled.Wbody}>
+          <h1 className={styled.title}>
+            양성자가속기 제어 네트워크 망 관리 시스템
+          </h1>
 
           <div>
             <div className={styled.ipBox}>
-              <div className={styled.newBox}>
-                <h2> 신규 IP 목록 (등록필요)</h2>
-                <h3>
-                  <span className={styled.dataNumber}>
-                    {needRegister.length}
-                  </span>
-                  개의 신규IP가 있습니다.
-                </h3>
-                <div className={styled.newBoxList}>
-                  <ul className={styled.ipList}>
-                    {needRegister.map((item, idx) => (
-                      <li
-                        className={styled.ipItem}
-                        data-hover={item}
-                        key={idx}
-                        onClick={() => handleRegister({ item, idx })}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+              <div className={styled.allBox}>
+                <div className={styled.newBox}>
+                  <h2> 신규 IP 목록 (등록필요)</h2>
+                  <h3>
+                    <span className={styled.dataNumber}>
+                      {needRegister.length}
+                    </span>
+                    개의 신규IP가 있습니다.
+                  </h3>
+                  <div className={styled.newBoxList}>
+                    <ul className={styled.ipList}>
+                      {needRegister.map((item, idx) => (
+                        <li
+                          className={styled.ipItem}
+                          data-hover={item}
+                          key={idx}
+                          onClick={() => handleRegister({ item, idx })}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
 
-              <div className={styled.newBox2}>
-                <h2>NMS에서 관리되지 않는 IP 목록</h2>
-                <h3>
-                  <span className={styled.dataNumber}>{oldIplist.length}</span>
-                  개의 관리되지 않는 IP가 있습니다.
-                </h3>
-                <div className={styled.newBoxList}>
-                  <ul className={styled.ipList}>
-                    {oldIplist.map((item, idx) => (
-                      <li
-                        className={styled.ipItem}
-                        data-hover={item}
-                        key={idx}
-                        onClick={() => handleDetailClick(idx, item)}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                <div className={styled.newBox2}>
+                  <h2>NMS에서 관리되지 않는 IP 목록</h2>
+                  <h3>
+                    <span className={styled.dataNumber}>
+                      {oldIplist.length}
+                    </span>
+                    개의 관리되지 않는 IP가 있습니다.
+                  </h3>
+                  <div className={styled.newBoxList}>
+                    <ul className={styled.ipList}>
+                      {oldIplist.map((item, idx) => (
+                        <li
+                          className={styled.ipItem}
+                          data-hover={item}
+                          key={idx}
+                          onClick={() => handleDetailClick(idx, item)}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className={styled.newBox3}>
+                  <h2>MAC 충돌 IP 목록</h2>
+                  <h3>
+                    <span className={styled.dataNumber}>
+                      {collapseIplist.length}
+                    </span>
+                    개의 MAC 정보 변경 IP가 있습니다.
+                  </h3>
+                  <div className={styled.newBoxList}>
+                    <ul className={styled.ipList}>
+                      {collapseIplist.map((item, idx) => (
+                        <li
+                          className={styled.ipItem}
+                          data-hover={item}
+                          key={idx}
+                          onClick={() => handleCollapse(idx, item)}
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className={styled.newBox4}>
+                  <h2>IP 관리 시스템 개요</h2>
+                  <h3>NMS에서 보내온 IP 목록은 {newIplist.length}개 입니다.</h3>
+                  <h3>관리중인 IP 목록은 {djanIplist.length}개 입니다.</h3>
+                  <h3>
+                    가장 최근 등록된 IP :{" "}
+                    <span
+                      className={styled.newIp}
+                      onClick={handleGodetailNewip}
+                    >
+                      {djanIplist[djanIplist.length - 1]}
+                    </span>
+                  </h3>
+                  <h3>대역별 IP 현황</h3>
+
+                  <PieChartforIP data={djanIplist} />
                 </div>
               </div>
-              <div className={styled.newBox3}>
-                <h2>MAC 충돌 IP 목록</h2>
-                <h3>
-                  <span className={styled.dataNumber}>
-                    {collapseIplist.length}
-                  </span>
-                  개의 MAC 정보 변경 IP가 있습니다.
-                </h3>
-                <div className={styled.newBoxList}>
-                  <ul className={styled.ipList}>
-                    {collapseIplist.map((item, idx) => (
-                      <li
-                        className={styled.ipItem}
-                        data-hover={item}
-                        key={idx}
-                        onClick={() => handleCollapse(idx, item)}
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+              <NetworkGraph className={styled.network} data={djanIpInfo} />
+            </div>
+
+            <div className={styled.searchingBoxBody}>
+              <div className={styled.withRefresh}>
+                <button onClick={handleRefresh}>
+                  <img src={refreshImg}></img>
+                </button>
+                <form
+                  className={styled.ipSearchingBox}
+                  onSubmit={handleSearching}
+                >
+                  <input
+                    type="text"
+                    placeholder="IP 검색, 사용가능 여부 확인"
+                    value={ipcheck}
+                    required
+                    onChange={handleValidateInput}
+                  />
+                  <input type="submit" />
+                </form>
+              </div>
+              <div>
+                <div
+                  className={
+                    requestSearching ? styled.showSearching : styled.noShow
+                  }
+                >
+                  <LoadingContext.Provider value={{ setLoading3 }}>
+                    <PingTest ip_address={ipcheck} />
+                  </LoadingContext.Provider>
+                  <div>
+                    {searchingRes ? (
+                      notRegister ? (
+                        <div>
+                          <h3 className={styled.usingIp}>
+                            사용중인 <span>IP</span>입니다.
+                          </h3>
+                          <h3>IP 등록이 필요합니다. 등록하시겠어요?</h3>
+                          <h3>
+                            등록하려면,{" "}
+                            <span
+                              className={styled.registerClick}
+                              onClick={() => handleRegister({ item: ipcheck })}
+                            >
+                              여기를 클릭
+                            </span>
+                          </h3>
+                        </div>
+                      ) : notManaging ? (
+                        <div>
+                          <h3 className={styled.usingIp}>
+                            DB에 등록되었지만 현재 사용하지 않습니다.
+                          </h3>
+                          <h3>
+                            Update나 수정을 원하시면{" "}
+                            <span
+                              className={styled.registerClick}
+                              onClick={handleGoDetail}
+                            >
+                              여기를 클릭
+                            </span>
+                          </h3>
+                        </div>
+                      ) : (
+                        <div>
+                          <h3 className={styled.usingIp}>
+                            DB에 등록된 <span>IP</span>입니다.
+                          </h3>
+                          <h3>
+                            세부 정보를 확인하고 싶다면,{" "}
+                            <span
+                              className={styled.registerClick}
+                              onClick={handleGoDetail}
+                            >
+                              여기를 클릭
+                            </span>
+                          </h3>
+                        </div>
+                      )
+                    ) : (
+                      <div>
+                        <img src={noresultImg}></img>
+                        <h3>검색 결과가 없습니다...</h3>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
+          <AllipList />
         </div>
       )}
-      <NetworkGraph />
-      <div>
-        <form className={styled.ipSearchingBox} onSubmit={handleSearching}>
-          <input
-            type="text"
-            placeholder="IP 검색, 사용가능 여부 확인"
-            value={ipcheck}
-            required
-            onChange={handleValidateInput}
-          />
-          <input type="submit" />
-        </form>
-        <div>
-          <div
-            className={requestSearching ? styled.showSearching : styled.noShow}
-          >
-            <LoadingContext.Provider value={{ loading3, setLoading3 }}>
-              <PingTest ip_address={ipcheck} />
-            </LoadingContext.Provider>
-            <div>
-              {searchingRes ? (
-                notRegister ? (
-                  <div>
-                    <h3 className={styled.usingIp}>
-                      사용중인 <span>IP</span>입니다.
-                    </h3>
-                    <h3>IP 등록이 필요합니다. 등록하시겠어요?</h3>
-                    <h3>
-                      등록하려면,{" "}
-                      <span
-                        className={styled.registerClick}
-                        onClick={() => handleRegister({ item: ipcheck })}
-                      >
-                        여기를 클릭
-                      </span>
-                    </h3>
-                  </div>
-                ) : notManaging ? (
-                  <div>
-                    <h3 className={styled.usingIp}>
-                      DB에 등록되었지만 현재 사용하지 않습니다.
-                    </h3>
-                    <h3>
-                      Update나 수정을 원하시면{" "}
-                      <span
-                        className={styled.registerClick}
-                        onClick={handleGoDetail}
-                      >
-                        여기를 클릭
-                      </span>
-                    </h3>
-                  </div>
-                ) : (
-                  <div>
-                    <h3 className={styled.usingIp}>
-                      DB에 등록된 <span>IP</span>입니다.
-                    </h3>
-                    <h3>
-                      세부 정보를 확인하고 싶다면,{" "}
-                      <span
-                        className={styled.registerClick}
-                        onClick={handleGoDetail}
-                      >
-                        여기를 클릭
-                      </span>
-                    </h3>
-                  </div>
-                )
-              ) : (
-                <div>
-                  <img src={noresultImg}></img>
-                  <h3>검색 결과가 없습니다...</h3>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h2>각 IP별 특징을 나타내는 창을 구현</h2>
-        <h2>all, 10, 11, ,12 ,13, 100, 101에 대해 </h2>
-      </div>
-
-      <div>
-        <h2>등록된 IP 리스트</h2>
-        <ul>
-          {djanIplist.map((item, idx) => (
-            <li key={idx} onClick={() => handleDetailClick(idx, item)}>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }

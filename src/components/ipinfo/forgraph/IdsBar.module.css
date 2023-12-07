@@ -1,0 +1,19 @@
+.wbody {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 5px dashed gray;
+  border-radius: 20px;
+  margin-left: 20px;
+  background-color: #f4ffff;
+  transition: 0.3s all ease-in-out;
+}
+
+.wbody:hover {
+  border: 5px dashed #ff895a;
+}
+
+.wbody > svg {
+  background-color: transparent;
+  padding: 40px;
+}

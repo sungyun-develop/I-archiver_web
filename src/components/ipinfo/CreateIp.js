@@ -53,7 +53,7 @@ function CreateIp() {
     console.log(allInfo);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/getdb",
+        "http://192.168.100.71:8000/getdb",
         allInfo,
         {
           withCredentials: true,
@@ -160,6 +160,9 @@ function CreateIp() {
               <option value="카메라">카메라</option>
               <option value="PLC">PLC</option>
               <option value="VME 보드">VME 보드</option>
+              <option value="전원 장치">전원 장치</option>
+              <option value="스위치">스위치</option>
+              <option value="계측기">계측기</option>
               <option value="기타">기타</option>
               <option value="직접입력">직접입력</option>
             </select>
@@ -203,8 +206,8 @@ function CreateIp() {
             <h3>OS </h3>
             <input
               type="text"
-              name="source_dir"
-              value={allInfo.source_dir}
+              name="os_info"
+              value={allInfo.os_info}
               onChange={handleInputChange}
               className={styled.includeDesc}
             />
